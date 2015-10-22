@@ -1,0 +1,503 @@
+-- Schemol grammar to Schemol abstract syntax transformation
+-- Author: Javier Luis Canovas Izquierdo
+--
+-- Description: 
+
+
+--------------------------
+-- Main rule (top rule) --
+--------------------------
+rule 'mapDefinition'
+    from definition d
+    to core::Definition
+    queries
+        ruleDs : //#ruleDef;
+        consDs : //preamble/#constraint;
+        viewDs : //preamble/#view;
+    mappings
+        preambleParts = consDs;
+        preambleParts = viewDs;
+        rules = ruleDs;
+end_rule
+
+
+--------------------------
+-- Rules for preamble
+--------------------------
+
+rule 'mapConstraint'
+	from constraint c
+	to core::Constraint
+	queries
+		pks : /c//pkConstraint/#pkID;
+		fks : /c//#fkConstraint;
+	mappings
+		table = c.ID;
+		primaryKeys = pks.ID;
+		foreignKeys = fks;
+end_rule
+
+rule 'mapForeingKey'
+	from fkConstraint fkc
+	to core::Key
+	queries
+		tTable : //#constraint//fkConstraint{this.check(fkc)};
+	mappings
+		fromTable = tTable.ID;
+		fromColumn = fkc.ID[0];
+		toTable = fkc.ID[1];
+		toColumn = fkc.ID[2];
+end_rule
+
+rule 'mapView'
+	from view v
+	to core::View
+	queries
+		n  : /v/#viewTable;
+		cs : /v/#viewColumn;
+	mappings
+		name = extractID n;
+		columns = cs.ID;
+		select = v.VIEWVALUE;
+end_rule
+
+--------------------------
+-- Rules for body
+--------------------------
+
+rule 'mapNormalRule'
+    from ruleDef/ruleType{TOKEN[0].eq("rule")} r
+    to core::NormalRule
+    queries
+        filtP : /r/#filterPart;
+        fromP : /r/#fromPart;
+        toP : /r/#toPart;
+        maps  : /r/#mappingDef;
+    mappings
+        name = r.ID;
+        _from = new core::FromPart;
+        _from.fromElement = extractID fromP;
+        _to = new core::ToPart;
+        _to.toElement = extractID toP;
+        filter = filtP;
+        _mappings = maps;
+end_rule
+
+rule 'mapTopRule'
+    from ruleDef/ruleType{TOKEN[0].eq("toprule")} r
+    to core::TopRule
+    queries
+        filtP : /r/#filterPart;
+        fromP : /r/#fromPart;
+        toP : /r/#toPart;
+        maps  : /r/#mappingDef;
+    mappings
+        name = r.ID;
+        _from = new core::FromPart;
+        _from.fromElement = extractID fromP;
+        _to = new core::ToPart;
+        _to.toElement = extractID toP;
+        filter = filtP;
+        _mappings = maps;
+end_rule
+
+rule 'mapFilterPart'
+   from filterPart fp
+   to core::FilterPart
+   queries
+      exp : /fp/#conditionalExpression;
+   mappings
+      expression = exp;
+end_rule
+
+rule 'mapIf'
+	from mappingDef/mappingIf m
+	to core::If
+	queries
+		mexp : /m/mappingIf/#conditionalExpression;
+		ifs  : /m//#mappingDef;
+		els  : /m//elsePart/#mappingDef;
+	mappings
+		exp = mexp;
+		ifmap = ifs;
+		elsemap = els;
+end_rule
+
+rule 'mapBinding'
+    from mappingDef/binding m
+    to core::Binding
+    queries
+    	bin : /m/#binding;
+        exp : /m/binding/#additiveExpression;
+    mappings
+        leftOperand = bin.attr;
+        rightOperand = exp;
+end_rule
+
+-----------------------------------------
+-- RULES FOR EXPRESSIONS (Conditional)
+-----------------------------------------
+
+skip_rule 'skipConditional'
+   from conditionalExpression ce
+   to expression::Expression
+   queries
+      next : /ce/#andExpression;
+   mappings
+      skip next;
+end_rule
+
+skip_rule 'skipAnd'
+   from andExpression{!TOKEN[0].exists} ae
+   to expression::Expression
+   queries
+      next : /ae/#orExpression;
+   mappings
+      skip next;
+end_rule
+
+rule 'mapAnd'
+   from andExpression{TOKEN[0].exists} ae
+   to expression::BooleanExpression
+   queries
+      leftOp  : /ae/#orExpression;
+      rightOp : /ae/#andExpression;
+   mappings
+      leftOperand = leftOp;
+      type = "AND";
+      rightOperand = rightOp;
+end_rule
+
+skip_rule 'skipOr'
+   from orExpression{!TOKEN[0].exists} oe
+   to expression::Expression
+   queries
+      next : /oe/#atomExpression;
+   mappings
+      skip next;
+end_rule
+
+rule 'mapOr'
+   from orExpression{TOKEN[0].exists} oe
+   to expression::BooleanExpression
+   queries
+      leftOp  : /oe/#atomExpression;
+      rightOp : /oe/#orExpression;
+   mappings
+      leftOperand = leftOp;
+      type = "OR";
+      rightOperand = rightOp;
+end_rule
+
+-- Take care, this rule must be located here
+rule 'mapRelational'
+   from atomExpression/relationalOp{TOKEN[0].eq("==")}//stringExpression ae
+   to expression::StringExpression
+   queries
+      leftOp  : /ae/#additiveExpression[0];
+      rightOp : /ae/#additiveExpression[1];
+   mappings
+      leftOperand = leftOp;
+      rightOperand = rightOp;
+      type = "EQUALS";
+end_rule
+
+-- Take care, this rule must be located here
+rule 'mapRelational'
+   from atomExpression/relationalOp ae
+   to expression::BooleanExpression
+   queries
+      leftOp  : /ae/#additiveExpression[0];
+      rightOp : /ae/#additiveExpression[1];
+      isLess  : /ae/#relationalOp{TOKEN[0].eq("<")};
+      isLessEQ: /ae/#relationalOp{TOKEN[0].eq("<=")};
+      isGrea  : /ae/#relationalOp{TOKEN[0].eq(">")};
+      isGreaEQ: /ae/#relationalOp{TOKEN[0].eq(">=")};
+      isEQ    : /ae/#relationalOp{TOKEN[0].eq("==")};
+      isNEQ   : /ae/#relationalOp{TOKEN[0].eq("!=")};
+   mappings
+      leftOperand = leftOp;
+      rightOperand = rightOp;
+      if(isLess.hasResults) then
+         type = "LESS";
+      else
+         if(isLessEQ.hasResults) then
+            type = "LESSEQ";
+         else
+            if(isGrea.hasResults) then
+               type = "GREATER";
+            else
+               if(isGreaEQ.hasResults) then
+                  type = "GREATEREQ";
+               else 
+                  if(isEQ.hasResults) then
+                  	type = "EQUALS";
+                  else 
+                  	if(isNEQ.hasResults) then
+                  		type = "DISTINCT";
+                  	end_if
+                  end_if
+               end_if
+            end_if
+         end_if
+      end_if
+end_rule
+
+skip_rule 'skipRealtional'
+   from atomExpression ae
+   to expression::Expression
+   queries
+      next : /ae/#additiveExpression;
+   mappings
+      skip next;
+end_rule
+
+-----------------------------------------
+-- RULES FOR EXPRESSIONS (Additive)
+-----------------------------------------
+skip_rule 'skipAdditive'
+   from additiveExpression{!TOKEN[0].exists} ae
+   to expression::Expression
+   queries
+      next : /ae/#multiplicativeExpression;
+   mappings
+      skip next;
+end_rule
+
+-- Take care, this rule must be located here
+rule 'mapStringExpression'
+   from additiveExpression{TOKEN[0].exists}//stringExpression ae
+   to expression::StringExpression
+   queries
+      leftOp  : /ae/#multiplicativeExpression;
+      rightOp : /ae/#additiveExpression;
+   mappings
+      leftOperand = leftOp;
+      rightOperand = rightOp;
+      type = "CONCAT";
+end_rule
+
+rule 'mapAdditive'
+   from additiveExpression{TOKEN[0].exists} ae
+   to expression::ArithmeticExpression
+   queries
+      leftOp  : /ae/#multiplicativeExpression;
+      isAdd   : /#ae{TOKEN[0].eq("+")};
+      isMinus : /#ae{TOKEN[0].eq("-")};
+      rightOp : /ae/#additiveExpression;
+   mappings
+      leftOperand = leftOp;
+      rightOperand = rightOp;
+      if(isAdd.hasResults) then
+         type = "ADD";
+      else
+         type = "MINUS";
+      end_if
+end_rule
+
+skip_rule 'skipMultiplicative'
+   from multiplicativeExpression{!TOKEN[0].exists} me
+   to expression::Expression
+   queries
+      next  : /me/#unaryExpression;
+   mappings
+      skip next;
+end_rule
+
+rule 'mapMultiplicative'
+   from multiplicativeExpression{TOKEN[0].exists} me
+   to expression::ArithmeticExpression
+   queries
+      leftOp  : /me/#unaryExpression;
+      isMul   : /#me{TOKEN[0].eq("*")};
+      isDiv   : /#me{TOKEN[0].eq("/")};
+      rightOp : /me/#multiplicativeExpression;
+   mappings
+      leftOperand = leftOp;
+      rightOperand = rightOp;
+      if(isAdd.hasResults) then
+         type = "MULT";
+      else
+         type = "DIV";
+      end_if
+end_rule
+
+--------------------------------
+--- UNARY EXPRESSION RULES -----
+--------------------------------
+
+
+rule 'mapStringExpression'
+   from unaryExpression/stringExpression exp
+   to expression::StringElement
+   queries
+      val : /exp/#stringExpression;
+   mappings
+      value = removeQuotes val.DQVALUE;
+end_rule
+
+rule 'mapIntegerExpression'
+   from unaryExpression/integerExpression exp
+   to expression::IntElement
+   queries
+      val : /exp/#integerExpression;
+   mappings
+      value = extractID val;
+end_rule
+
+rule 'mapBooleanExpression'
+	from unaryExpression/booleanExpression exp
+	to expression::BoolElement
+	queries
+		isTrue : /#exp/booleanExpression{TOKEN[0].eq("true")};
+	mappings
+		type = "INMEDIATE";
+		if(isTrue.hasResults) then
+			value = "true";
+		else
+			value = "false";
+		end_if
+end_rule
+
+
+rule 'mapQueryExpression'
+    from unaryExpression/query exp
+    to query::QueryBase
+    queries
+        q    : /exp/#query;
+        part : /exp/query/#queryPart;
+    mappings
+        baseName = q.ID;
+        queryPart = part;
+end_rule
+
+rule 'mapQueryPart'
+    from queryPart qp
+    to query::QueryPart
+    queries
+    	isClass    : /#qp{TOKEN[0].exists && TOKEN[0].eq("class")};
+    	isProperty : /#qp{TOKEN[0].exists && TOKEN[0].eq("property")};
+    	isParameter: /#qp{TOKEN[0].exists && TOKEN[0].eq("parameter")};
+    	isCount    : /#qp{TOKEN[0].exists && TOKEN[0].eq("count")};
+    	
+    	param1 : /qp/queryParameter[0]/#unaryExpression;
+    	param2 : /qp/queryParameter[1]/#unaryExpression;
+    
+        part     : /qp/#queryPart;
+        atExists : /#qp{TOKEN[0].exists && TOKEN[0].eq("@")};
+        qfilter  : /qp/#queryFilter;
+        qgroup   : /qp/#queryGroup;
+    mappings
+    	if(isClass.hasResults) then
+    		type = "HTML";
+    		value = "class";
+    		params = param1;
+    	else
+    		if(isProperty.hasResults) then
+    			type = "HTML";
+    			value = "property";
+    			params = param1;
+    		else
+    			if(isParameter.hasResults) then
+    				type = "HTML";
+    				value = "parameter";
+    				params = param1;
+    				params = param2;
+    			else
+    			    if(isCount.hasResults) then
+    			    	type  = "OPERATION";
+    			    	value = "count";
+    			    else
+    					if(atExists.hasResults) then
+            				type = "TABLE";
+         				else
+            				type = "COLUMN";
+         				end_if
+         			    	
+        				value = qp.ID;
+        				filter = qfilter;
+        				groupBy = qgroup.ID;
+        				nextQuery = part;
+    			    end_if
+    			end_if
+    		end_if
+    	end_if
+end_rule
+
+rule 'mapQueryParameter'
+	from unaryExpression exp
+	to query::QueryParameter
+	queries
+	mappings
+		expression = exp;
+end_rule
+
+skip_rule 'skipQueryFilter'
+	from queryFilter qf
+	to expression::FilterExpression
+	queries
+		next : /qf/#queryAndExpression;
+	do
+		skip next;
+end_rule
+
+skip_rule 'skipQueryAndExpression'
+	from queryAndExpression{!TOKEN[0].exists} qae
+	to expression::FilterExpression
+	queries
+		next : /qae/#queryOrExpression;
+	do
+		skip next;
+end_rule
+
+rule 'mapQueryAndExpression'
+	from queryAndExpression{TOKEN[0].exists} qae
+	to expression::FilterExpression
+	queries
+		left  : /qae/#queryOrExpression;
+		right : /qae/#queryAndExpression;
+	mappings
+		leftOperand = left;
+		type = "AND";
+		rightOperand = right;
+end_rule
+
+skip_rule 'skipQueryOrExpression'
+	from queryOrExpression{!TOKEN[0].exists} qoe
+	to expression::FilterExpression
+	queries
+		next : /qoe/#queryAtom;
+	do
+		skip next;
+end_rule
+
+rule 'mapQueryOrExpression'
+	from queryOrExpression{TOKEN[0].exists} qoe
+	to expression::FilterExpression
+	queries
+		left  : /qoe/#queryAtom;
+		right : /qoe/#queryOrExpression;
+	mappings
+		leftOperand = left;
+		type = "OR";
+		rightOperand = right;
+end_rule
+
+rule 'mapQueryAtom'
+	from queryAtom qa
+	to query::QueryFilter
+	queries
+	  exp   : /qa/#additiveExpression;
+      isEQ  : /#qa{TOKEN[0].eq("==")};
+      isNEQ : /#qa{TOKEN[0].eq("!=")};
+	mappings
+		column = qa.ID;
+		expression = exp;
+		if(isEQ.hasResults) then
+			type = "EQUALS";
+		else 
+			if (isNEQ.hasResults) then
+				type = "DISTINCT";
+			end_if
+		end_if
+end_rule

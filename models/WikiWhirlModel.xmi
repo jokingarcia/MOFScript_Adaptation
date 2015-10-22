@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WikiWhirl:WW_Process xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:WikiWhirl="www.onekin.org/wikiwhirl">
+  <wiki wikiResources="//@ww_Operations.0/@arguments.0/@wikiResource //@ww_Operations.0/@arguments.1/@wikiResource //@ww_Operations.1/@arguments.1/@wikiResource/@sections.0 //@ww_Operations.1/@arguments.1/@wikiResource //@ww_Operations.1/@arguments.2/@wikiResource //@ww_Operations.2/@arguments.0/@wikiResource //@ww_Operations.3/@arguments.0/@wikiResource //@ww_Operations.5/@arguments.0/@wikiResource //@ww_Operations.6/@arguments.1/@wikiResource //@ww_Operations.9/@arguments.0/@wikiResource //@ww_Operations.9/@arguments.1/@wikiResource" title="Software"/>
+  <ww_Operations xsi:type="WikiWhirl:Categorize" number="1">
+    <arguments xsi:type="WikiWhirl:ResourceArg">
+      <wikiResource xsi:type="WikiWhirl:Article" title="House_Testing" URL="http://localhost/Software/index.php/House_Testing"/>
+    </arguments>
+    <arguments xsi:type="WikiWhirl:ResourceArg">
+      <wikiResource xsi:type="WikiWhirl:Category" title="Softwareproject" URL="http://localhost/Software/index.php/Category:Softwareproject"/>
+    </arguments>
+  </ww_Operations>
+  <ww_Operations xsi:type="WikiWhirl:Move" number="2">
+    <arguments xsi:type="WikiWhirl:ReferenceArg" wikiResource="//@ww_Operations.1/@arguments.1/@wikiResource/@sections.0"/>
+    <arguments xsi:type="WikiWhirl:ResourceArg">
+      <wikiResource xsi:type="WikiWhirl:Article" title="Prueba2" URL="http://localhost/Software/index.php/Prueba2">
+        <sections title="Introduction" URL="http://"/>
+      </wikiResource>
+    </arguments>
+    <arguments xsi:type="WikiWhirl:ResourceArg">
+      <wikiResource xsi:type="WikiWhirl:Article" title="Prueba" URL="http://localhost/Software/index.php/Prueba"/>
+    </arguments>
+  </ww_Operations>
+  <ww_Operations xsi:type="WikiWhirl:Drop" number="3">
+    <arguments xsi:type="WikiWhirl:ResourceArg">
+      <wikiResource xsi:type="WikiWhirl:Article" title="A1b" URL="http://localhost/Software/index.php/A1b"/>
+    </arguments>
+  </ww_Operations>
+  <ww_Operations xsi:type="WikiWhirl:Create" number="4">
+    <arguments xsi:type="WikiWhirl:ResourceArg">
+      <wikiResource xsi:type="WikiWhirl:Category" title="New_Software" URL="http://localhost/Software/index.php/Category:New_Software"/>
+    </arguments>
+  </ww_Operations>
+  <ww_Operations xsi:type="WikiWhirl:Categorize" number="5">
+    <arguments xsi:type="WikiWhirl:ReferenceArg" wikiResource="//@ww_Operations.3/@arguments.0/@wikiResource"/>
+    <arguments xsi:type="WikiWhirl:ReferenceArg" wikiResource="//@ww_Operations.0/@arguments.1/@wikiResource"/>
+  </ww_Operations>
+  <ww_Operations xsi:type="WikiWhirl:Drop" number="6">
+    <arguments xsi:type="WikiWhirl:ResourceArg">
+      <wikiResource xsi:type="WikiWhirl:Article" title="Testing" URL="http://localhost/Software/index.php/Testing"/>
+    </arguments>
+  </ww_Operations>
+  <ww_Operations xsi:type="WikiWhirl:Uncategorize" number="7">
+    <arguments xsi:type="WikiWhirl:ReferenceArg" wikiResource="//@ww_Operations.5/@arguments.0/@wikiResource"/>
+    <arguments xsi:type="WikiWhirl:ResourceArg">
+      <wikiResource xsi:type="WikiWhirl:Category" title="Software" URL="http://localhost/Software/index.php/Category:Software"/>
+    </arguments>
+  </ww_Operations>
+  <ww_Operations xsi:type="WikiWhirl:Categorize" number="8">
+    <arguments xsi:type="WikiWhirl:ReferenceArg" wikiResource="//@ww_Operations.5/@arguments.0/@wikiResource"/>
+    <arguments xsi:type="WikiWhirl:ReferenceArg" wikiResource="//@ww_Operations.0/@arguments.1/@wikiResource"/>
+  </ww_Operations>
+  <ww_Operations xsi:type="WikiWhirl:Merge" number="9">
+    <arguments xsi:type="WikiWhirl:ReferenceArg" wikiResource="//@ww_Operations.1/@arguments.1/@wikiResource"/>
+    <arguments xsi:type="WikiWhirl:ReferenceArg" wikiResource="//@ww_Operations.1/@arguments.2/@wikiResource"/>
+  </ww_Operations>
+  <ww_Operations xsi:type="WikiWhirl:Rename" number="10">
+    <arguments xsi:type="WikiWhirl:ResourceArg">
+      <wikiResource xsi:type="WikiWhirl:Article" title="Prueba2_Prueba" URL="http://localhost/Software/index.php/Prueba2_Prueba"/>
+    </arguments>
+    <arguments xsi:type="WikiWhirl:ResourceArg">
+      <wikiResource xsi:type="WikiWhirl:Article" title="Test_new" URL="http://localhost/Software/index.php/Test_new"/>
+    </arguments>
+  </ww_Operations>
+  <ww_Operations xsi:type="WikiWhirl:Rename" number="11">
+    <arguments xsi:type="WikiWhirl:ResourceArg"/>
+    <arguments xsi:type="WikiWhirl:ResourceArg"/>
+  </ww_Operations>
+  <ww_Operations xsi:type="WikiWhirl:Rename" number="12">
+    <arguments xsi:type="WikiWhirl:ResourceArg"/>
+    <arguments xsi:type="WikiWhirl:ResourceArg"/>
+  </ww_Operations>
+  <ww_Operations xsi:type="WikiWhirl:Rename" number="13">
+    <arguments xsi:type="WikiWhirl:ResourceArg"/>
+    <arguments xsi:type="WikiWhirl:ResourceArg"/>
+  </ww_Operations>
+  <ww_Operations xsi:type="WikiWhirl:Rename" number="14">
+    <arguments xsi:type="WikiWhirl:ResourceArg"/>
+    <arguments xsi:type="WikiWhirl:ResourceArg"/>
+  </ww_Operations>
+</WikiWhirl:WW_Process>

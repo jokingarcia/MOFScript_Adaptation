@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<core:Definition xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://www.modelum.es/schemol/core" xmlns:expression="http://www.modelum.es/schemol/expression" xmlns:query="http://www.modelum.es/schemol/query">
+  <rules xsi:type="core:TopRule" name="catalog">
+    <from fromElement="blojsom::blog"/>
+    <to toElement="Catalog::Catalog"/>
+    <mappings xsi:type="core:Binding" leftOperand="version">
+      <rightOperand xsi:type="query:QueryBase" baseName="blog">
+        <queryPart type="COLUMN" value="blog_id"/>
+      </rightOperand>
+    </mappings>
+    <mappings xsi:type="core:Binding" leftOperand="itsCategories">
+      <rightOperand xsi:type="query:QueryBase" baseName="blog">
+        <queryPart value="category"/>
+      </rightOperand>
+    </mappings>
+  </rules>
+  <rules xsi:type="core:NormalRule" name="category">
+    <from fromElement="blojsom::category"/>
+    <to toElement="Catalog::Category"/>
+    <mappings xsi:type="core:Binding" leftOperand="name">
+      <rightOperand xsi:type="query:QueryBase" baseName="cate">
+        <queryPart type="COLUMN" value="name"/>
+      </rightOperand>
+    </mappings>
+    <mappings xsi:type="core:Binding" leftOperand="itsCategories">
+      <rightOperand xsi:type="query:QueryBase" baseName="cate">
+        <queryPart value="category_children">
+          <nextQuery type="COLUMN" value="children_id"/>
+        </queryPart>
+      </rightOperand>
+    </mappings>
+    <mappings xsi:type="core:Binding" leftOperand="itsProducts">
+      <rightOperand xsi:type="query:QueryBase" baseName="cate">
+        <queryPart value="entry"/>
+      </rightOperand>
+    </mappings>
+  </rules>
+  <rules xsi:type="core:NormalRule" name="cheapProduct">
+    <from fromElement="blojsom::entry"/>
+    <to toElement="Catalog::CheapProduct"/>
+    <filter>
+      <expression xsi:type="expression:BooleanExpression" type="LESS">
+        <leftOperand xsi:type="query:QueryBase" baseName="entr">
+          <queryPart type="COLUMN" value="description">
+            <nextQuery type="HTML" value="class">
+              <params>
+                <expression xsi:type="expression:StringElement" value="price"/>
+              </params>
+            </nextQuery>
+          </queryPart>
+        </leftOperand>
+        <rightOperand xsi:type="expression:IntElement" value="400"/>
+      </expression>
+    </filter>
+    <mappings xsi:type="core:Binding" leftOperand="name">
+      <rightOperand xsi:type="query:QueryBase" baseName="entr">
+        <queryPart type="COLUMN" value="title"/>
+      </rightOperand>
+    </mappings>
+    <mappings xsi:type="core:Binding" leftOperand="brand">
+      <rightOperand xsi:type="query:QueryBase" baseName="entr">
+        <queryPart type="COLUMN" value="description">
+          <nextQuery type="HTML" value="class">
+            <params>
+              <expression xsi:type="expression:StringElement" value="brand"/>
+            </params>
+          </nextQuery>
+        </queryPart>
+      </rightOperand>
+    </mappings>
+    <mappings xsi:type="core:Binding" leftOperand="price">
+      <rightOperand xsi:type="query:QueryBase" baseName="entr">
+        <queryPart type="COLUMN" value="description">
+          <nextQuery type="HTML" value="class">
+            <params>
+              <expression xsi:type="expression:StringElement" value="price"/>
+            </params>
+          </nextQuery>
+        </queryPart>
+      </rightOperand>
+    </mappings>
+    <mappings xsi:type="core:Binding" leftOperand="family">
+      <rightOperand xsi:type="query:QueryBase" baseName="entr">
+        <queryPart type="COLUMN" value="description">
+          <nextQuery type="HTML" value="class">
+            <params>
+              <expression xsi:type="expression:StringElement" value="category"/>
+            </params>
+          </nextQuery>
+        </queryPart>
+      </rightOperand>
+    </mappings>
+    <mappings xsi:type="core:Binding" leftOperand="itsRelatedProducts">
+      <rightOperand xsi:type="query:QueryBase" baseName="entr">
+        <queryPart value="trackback">
+          <nextQuery type="COLUMN" value="entry_id"/>
+        </queryPart>
+      </rightOperand>
+    </mappings>
+    <mappings xsi:type="core:Binding" leftOperand="itsAttributes">
+      <rightOperand xsi:type="query:QueryBase" baseName="entr">
+        <queryPart type="COLUMN" value="description">
+          <nextQuery type="HTML" value="class">
+            <params>
+              <expression xsi:type="expression:StringElement" value="identifier"/>
+            </params>
+          </nextQuery>
+        </queryPart>
+      </rightOperand>
+    </mappings>
+  </rules>
+  <rules xsi:type="core:NormalRule" name="reasonableProduct">
+    <from fromElement="blojsom::entry"/>
+    <to toElement="Catalog::ReasonableProduct"/>
+    <filter>
+      <expression xsi:type="expression:BooleanExpression">
+        <leftOperand xsi:type="expression:BooleanExpression" type="GREATER">
+          <leftOperand xsi:type="query:QueryBase" baseName="entr">
+            <queryPart type="COLUMN" value="description">
+              <nextQuery type="HTML" value="class">
+                <params>
+                  <expression xsi:type="expression:StringElement" value="price"/>
+                </params>
+              </nextQuery>
+            </queryPart>
+          </leftOperand>
+          <rightOperand xsi:type="expression:IntElement" value="400"/>
+        </leftOperand>
+        <rightOperand xsi:type="expression:BooleanExpression" type="LESS">
+          <leftOperand xsi:type="query:QueryBase" baseName="entr">
+            <queryPart type="COLUMN" value="description">
+              <nextQuery type="HTML" value="class">
+                <params>
+                  <expression xsi:type="expression:StringElement" value="price"/>
+                </params>
+              </nextQuery>
+            </queryPart>
+          </leftOperand>
+          <rightOperand xsi:type="expression:IntElement" value="700"/>
+        </rightOperand>
+      </expression>
+    </filter>
+    <mappings xsi:type="core:Binding" leftOperand="name">
+      <rightOperand xsi:type="query:QueryBase" baseName="entr">
+        <queryPart type="COLUMN" value="title"/>
+      </rightOperand>
+    </mappings>
+    <mappings xsi:type="core:Binding" leftOperand="brand">
+      <rightOperand xsi:type="query:QueryBase" baseName="entr">
+        <queryPart type="COLUMN" value="description">
+          <nextQuery type="HTML" value="class">
+            <params>
+              <expression xsi:type="expression:StringElement" value="brand"/>
+            </params>
+          </nextQuery>
+        </queryPart>
+      </rightOperand>
+    </mappings>
+    <mappings xsi:type="core:Binding" leftOperand="price">
+      <rightOperand xsi:type="query:QueryBase" baseName="entr">
+        <queryPart type="COLUMN" value="description">
+          <nextQuery type="HTML" value="class">
+            <params>
+              <expression xsi:type="expression:StringElement" value="price"/>
+            </params>
+          </nextQuery>
+        </queryPart>
+      </rightOperand>
+    </mappings>
+    <mappings xsi:type="core:Binding" leftOperand="family">
+      <rightOperand xsi:type="query:QueryBase" baseName="entr">
+        <queryPart type="COLUMN" value="description">
+          <nextQuery type="HTML" value="class">
+            <params>
+              <expression xsi:type="expression:StringElement" value="category"/>
+            </params>
+          </nextQuery>
+        </queryPart>
+      </rightOperand>
+    </mappings>
+    <mappings xsi:type="core:Binding" leftOperand="itsRelatedProducts">
+      <rightOperand xsi:type="query:QueryBase" baseName="entr">
+        <queryPart value="trackback">
+          <nextQuery type="COLUMN" value="entry_id"/>
+        </queryPart>
+      </rightOperand>
+    </mappings>
+    <mappings xsi:type="core:Binding" leftOperand="itsAttributes">
+      <rightOperand xsi:type="query:QueryBase" baseName="entr">
+        <queryPart type="COLUMN" value="description">
+          <nextQuery type="HTML" value="class">
+            <params>
+              <expression xsi:type="expression:StringElement" value="identifier"/>
+            </params>
+          </nextQuery>
+        </queryPart>
+      </rightOperand>
+    </mappings>
+  </rules>
+  <rules xsi:type="core:NormalRule" name="ExpensiveProduct">
+    <from fromElement="blojsom::entry"/>
+    <to toElement="Catalog::ExpensiveProduct"/>
+    <filter>
+      <expression xsi:type="expression:BooleanExpression" type="GREATER">
+        <leftOperand xsi:type="query:QueryBase" baseName="entr">
+          <queryPart type="COLUMN" value="description">
+            <nextQuery type="HTML" value="class">
+              <params>
+                <expression xsi:type="expression:StringElement" value="price"/>
+              </params>
+            </nextQuery>
+          </queryPart>
+        </leftOperand>
+        <rightOperand xsi:type="expression:IntElement" value="700"/>
+      </expression>
+    </filter>
+    <mappings xsi:type="core:Binding" leftOperand="name">
+      <rightOperand xsi:type="query:QueryBase" baseName="entr">
+        <queryPart type="COLUMN" value="title"/>
+      </rightOperand>
+    </mappings>
+    <mappings xsi:type="core:Binding" leftOperand="brand">
+      <rightOperand xsi:type="query:QueryBase" baseName="entr">
+        <queryPart type="COLUMN" value="description">
+          <nextQuery type="HTML" value="class">
+            <params>
+              <expression xsi:type="expression:StringElement" value="brand"/>
+            </params>
+          </nextQuery>
+        </queryPart>
+      </rightOperand>
+    </mappings>
+    <mappings xsi:type="core:Binding" leftOperand="price">
+      <rightOperand xsi:type="query:QueryBase" baseName="entr">
+        <queryPart type="COLUMN" value="description">
+          <nextQuery type="HTML" value="class">
+            <params>
+              <expression xsi:type="expression:StringElement" value="price"/>
+            </params>
+          </nextQuery>
+        </queryPart>
+      </rightOperand>
+    </mappings>
+    <mappings xsi:type="core:Binding" leftOperand="family">
+      <rightOperand xsi:type="query:QueryBase" baseName="entr">
+        <queryPart type="COLUMN" value="description">
+          <nextQuery type="HTML" value="class">
+            <params>
+              <expression xsi:type="expression:StringElement" value="category"/>
+            </params>
+          </nextQuery>
+        </queryPart>
+      </rightOperand>
+    </mappings>
+    <mappings xsi:type="core:Binding" leftOperand="itsRelatedProducts">
+      <rightOperand xsi:type="query:QueryBase" baseName="entr">
+        <queryPart value="trackback">
+          <nextQuery type="COLUMN" value="entry_id"/>
+        </queryPart>
+      </rightOperand>
+    </mappings>
+    <mappings xsi:type="core:Binding" leftOperand="itsAttributes">
+      <rightOperand xsi:type="query:QueryBase" baseName="entr">
+        <queryPart type="COLUMN" value="description">
+          <nextQuery type="HTML" value="class">
+            <params>
+              <expression xsi:type="expression:StringElement" value="identifier"/>
+            </params>
+          </nextQuery>
+        </queryPart>
+      </rightOperand>
+    </mappings>
+  </rules>
+  <rules xsi:type="core:NormalRule" name="attribute">
+    <from fromElement="EMBidentifier"/>
+    <to toElement="Catalog::Attribute"/>
+    <mappings xsi:type="core:Binding" leftOperand="type">
+      <rightOperand xsi:type="query:QueryBase" baseName="embi">
+        <queryPart type="COLUMN" value="type"/>
+      </rightOperand>
+    </mappings>
+    <mappings xsi:type="core:Binding" leftOperand="value">
+      <rightOperand xsi:type="query:QueryBase" baseName="embi">
+        <queryPart type="COLUMN" value="value"/>
+      </rightOperand>
+    </mappings>
+  </rules>
+  <preambleParts xsi:type="core:Constraint" table="category_children">
+    <primaryKeys>category_id</primaryKeys>
+    <primaryKeys>children_id</primaryKeys>
+    <foreignKeys fromTable="category_children" fromColumn="children_id" toTable="category" toColumn="category_id"/>
+    <foreignKeys fromTable="category_children" fromColumn="category_id" toTable="category" toColumn="category_id"/>
+  </preambleParts>
+  <preambleParts xsi:type="core:Constraint" table="trackback">
+    <primaryKeys>trackback_id</primaryKeys>
+    <foreignKeys fromTable="trackback" fromColumn="entry_id" toTable="entry" toColumn="entry_id"/>
+  </preambleParts>
+  <preambleParts xsi:type="core:View" name="category_children" select="select c.category_id, c2.category_id from category c join category c2 on c2.parent_category_id = c.category_id;">
+    <columns>category_id</columns>
+    <columns>children_id</columns>
+  </preambleParts>
+</core:Definition>

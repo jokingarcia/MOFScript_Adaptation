@@ -1,0 +1,83 @@
+preamble
+  constraints
+    table category_children (
+      primaryKey (category_id, children_id)
+      foreignKey (children_id) references category(category_id)
+      foreignKey (category_id) references category(category_id)
+    )
+    table trackback(
+      primaryKey (trackback_id)
+      foreignKey (entry_id) references entry(entry_id)
+    )
+  end_constraints
+  views
+    create view category_children (category_id, children_id) as select c.category_id, c2.category_id from category c join category c2 on c2.parent_category_id = c.category_id;
+  end_views
+end_preamble
+
+toprule 'catalog'
+   from blojsom::blog blog
+   to Catalog::Catalog cata
+   mapping
+      cata.version = blog.blog_id;
+      cata.itsCategories = blog.@category;
+end_rule
+
+rule 'category'
+   from blojsom::category cate
+   to Catalog::Category ccat
+   mapping
+      ccat.name = cate.name;
+      ccat.itsCategories = cate.@category_children.children_id;
+      ccat.itsProducts = cate.@entry;
+end_rule
+
+rule 'cheapProduct'
+   from blojsom::entry entr
+   to Catalog::CheapProduct chea
+   filter
+    entr.description.class("price") < 400
+   mapping
+    chea.name = entr.title;
+    chea.brand = entr.description.class("brand");
+    chea.price = entr.description.class("price");
+    chea.family = entr.description.class("category"); 
+    chea.itsRelatedProducts = entr.@trackback.entry_id;
+    chea.itsAttributes = entr.description.class("identifier");
+end_rule
+
+rule 'reasonableProduct'
+   from blojsom::entry entr
+   to Catalog::ReasonableProduct reas
+   filter
+      entr.description.class("price") > 400 && entr.description.class("price") < 700 
+   mapping
+    reas.name = entr.title;
+    reas.brand = entr.description.class("brand");
+    reas.price = entr.description.class("price");
+    reas.family = entr.description.class("category"); 
+    reas.itsRelatedProducts = entr.@trackback.entry_id;
+    reas.itsAttributes = entr.description.class("identifier");
+end_rule
+
+rule 'ExpensiveProduct'
+   from blojsom::entry entr
+   to Catalog::ExpensiveProduct expe
+   filter
+      entr.description.class("price") > 700
+   mapping
+    expe.name = entr.title;
+    expe.brand = entr.description.class("brand");
+    expe.price = entr.description.class("price");
+    expe.family = entr.description.class("category"); 
+    expe.itsRelatedProducts = entr.@trackback.entry_id;
+    expe.itsAttributes = entr.description.class("identifier");
+end_rule
+
+rule 'attribute'
+	from EMBidentifier embi
+	to Catalog::Attribute attr
+	mapping |src, tgt|
+	  attr.type = embi.type;
+	  attr.value = embi.value;
+end_rule

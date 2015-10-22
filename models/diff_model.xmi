@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="Cp1252"?>
+<diff:DiffModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:diff="http://www.eclipse.org/emf/compare/diff/1.1" left="metamodels/wikidb116.ecore" right="metamodels/wikidb119.ecore">
+  <ownedElements xsi:type="diff:DiffGroup">
+    <subDiffElements xsi:type="diff:DiffGroup">
+      <subDiffElements xsi:type="diff:UpdateAttribute">
+        <attribute href="http://www.eclipse.org/emf/2002/Ecore#//ENamedElement/name"/>
+        <leftElement href="metamodels/wikidb116.ecore#/"/>
+        <rightElement href="metamodels/wikidb119.ecore#/"/>
+      </subDiffElements>
+      <subDiffElements xsi:type="diff:UpdateAttribute">
+        <attribute href="http://www.eclipse.org/emf/2002/Ecore#//EPackage/nsURI"/>
+        <leftElement href="metamodels/wikidb116.ecore#/"/>
+        <rightElement href="metamodels/wikidb119.ecore#/"/>
+      </subDiffElements>
+      <subDiffElements xsi:type="diff:UpdateAttribute">
+        <attribute href="http://www.eclipse.org/emf/2002/Ecore#//EPackage/nsPrefix"/>
+        <leftElement href="metamodels/wikidb116.ecore#/"/>
+        <rightElement href="metamodels/wikidb119.ecore#/"/>
+      </subDiffElements>
+      <subDiffElements xsi:type="diff:DiffGroup">
+        <subDiffElements xsi:type="diff:RemoveModelElement">
+          <rightParent href="metamodels/wikidb119.ecore#//user"/>
+          <leftElement href="metamodels/wikidb116.ecore#//user/user_options"/>
+        </subDiffElements>
+        <leftParent href="metamodels/wikidb116.ecore#//user"/>
+      </subDiffElements>
+      <subDiffElements xsi:type="diff:RemoveModelElement">
+        <rightParent href="metamodels/wikidb119.ecore#/"/>
+        <leftElement href="metamodels/wikidb116.ecore#//math"/>
+      </subDiffElements>
+      <subDiffElements xsi:type="diff:RemoveModelElement">
+        <rightParent href="metamodels/wikidb119.ecore#/"/>
+        <leftElement href="metamodels/wikidb116.ecore#//trackbacks"/>
+      </subDiffElements>
+      <subDiffElements xsi:type="diff:AddModelElement">
+        <leftParent href="metamodels/wikidb116.ecore#/"/>
+        <rightElement href="metamodels/wikidb119.ecore#//user_former_groups"/>
+      </subDiffElements>
+      <subDiffElements xsi:type="diff:DiffGroup">
+        <subDiffElements xsi:type="diff:AddModelElement">
+          <leftParent href="metamodels/wikidb116.ecore#//archive"/>
+          <rightElement href="metamodels/wikidb119.ecore#//archive/ar_sha1"/>
+        </subDiffElements>
+        <leftParent href="metamodels/wikidb116.ecore#//archive"/>
+      </subDiffElements>
+      <subDiffElements xsi:type="diff:DiffGroup">
+        <subDiffElements xsi:type="diff:AddModelElement">
+          <leftParent href="metamodels/wikidb116.ecore#//updatelog"/>
+          <rightElement href="metamodels/wikidb119.ecore#//updatelog/ul_value"/>
+        </subDiffElements>
+        <leftParent href="metamodels/wikidb116.ecore#//updatelog"/>
+      </subDiffElements>
+      <subDiffElements xsi:type="diff:DiffGroup">
+        <subDiffElements xsi:type="diff:AddModelElement">
+          <leftParent href="metamodels/wikidb116.ecore#//revision"/>
+          <rightElement href="metamodels/wikidb119.ecore#//revision/rev_sha1"/>
+        </subDiffElements>
+        <leftParent href="metamodels/wikidb116.ecore#//revision"/>
+      </subDiffElements>
+      <subDiffElements xsi:type="diff:AddModelElement">
+        <leftParent href="metamodels/wikidb116.ecore#/"/>
+        <rightElement href="metamodels/wikidb119.ecore#//module_deps"/>
+      </subDiffElements>
+      <subDiffElements xsi:type="diff:DiffGroup">
+        <subDiffElements xsi:type="diff:AddModelElement">
+          <leftParent href="metamodels/wikidb116.ecore#//interwiki"/>
+          <rightElement href="metamodels/wikidb119.ecore#//interwiki/iw_wikiid"/>
+        </subDiffElements>
+        <subDiffElements xsi:type="diff:AddModelElement">
+          <leftParent href="metamodels/wikidb116.ecore#//interwiki"/>
+          <rightElement href="metamodels/wikidb119.ecore#//interwiki/iw_api"/>
+        </subDiffElements>
+        <leftParent href="metamodels/wikidb116.ecore#//interwiki"/>
+      </subDiffElements>
+      <subDiffElements xsi:type="diff:DiffGroup">
+        <subDiffElements xsi:type="diff:AddModelElement">
+          <leftParent href="metamodels/wikidb116.ecore#//job"/>
+          <rightElement href="metamodels/wikidb119.ecore#//job/job_timestamp"/>
+        </subDiffElements>
+        <leftParent href="metamodels/wikidb116.ecore#//job"/>
+      </subDiffElements>
+      <subDiffElements xsi:type="diff:AddModelElement">
+        <leftParent href="metamodels/wikidb116.ecore#/"/>
+        <rightElement href="metamodels/wikidb119.ecore#//uploadstash"/>
+      </subDiffElements>
+      <subDiffElements xsi:type="diff:AddModelElement">
+        <leftParent href="metamodels/wikidb116.ecore#/"/>
+        <rightElement href="metamodels/wikidb119.ecore#//msg_resource"/>
+      </subDiffElements>
+      <subDiffElements xsi:type="diff:DiffGroup">
+        <subDiffElements xsi:type="diff:AddModelElement">
+          <leftParent href="metamodels/wikidb116.ecore#//categorylinks"/>
+          <rightElement href="metamodels/wikidb119.ecore#//categorylinks/cl_sortkey_prefix"/>
+        </subDiffElements>
+        <subDiffElements xsi:type="diff:AddModelElement">
+          <leftParent href="metamodels/wikidb116.ecore#//categorylinks"/>
+          <rightElement href="metamodels/wikidb119.ecore#//categorylinks/cl_collation"/>
+        </subDiffElements>
+        <subDiffElements xsi:type="diff:AddModelElement">
+          <leftParent href="metamodels/wikidb116.ecore#//categorylinks"/>
+          <rightElement href="metamodels/wikidb119.ecore#//categorylinks/cl_type"/>
+        </subDiffElements>
+        <leftParent href="metamodels/wikidb116.ecore#//categorylinks"/>
+      </subDiffElements>
+      <subDiffElements xsi:type="diff:AddModelElement">
+        <leftParent href="metamodels/wikidb116.ecore#/"/>
+        <rightElement href="metamodels/wikidb119.ecore#//msg_resource_links"/>
+      </subDiffElements>
+      <subDiffElements xsi:type="diff:AddModelElement">
+        <leftParent href="metamodels/wikidb116.ecore#/"/>
+        <rightElement href="metamodels/wikidb119.ecore#//iwlinks"/>
+      </subDiffElements>
+      <leftParent href="metamodels/wikidb116.ecore#/"/>
+    </subDiffElements>
+  </ownedElements>
+</diff:DiffModel>

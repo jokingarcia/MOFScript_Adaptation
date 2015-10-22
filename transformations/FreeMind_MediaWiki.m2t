@@ -1,0 +1,934 @@
+//import "printSQL.m2t"
+/**
+ * transformation FreeMind2MediaWiki
+ * date: 07/12/2011
+ * author: Gorka Puente
+ * email: gorka.puente@ehu.es
+ * description: This transformation creates a MySQL script to modify MediaWiki. 
+ * The input model is a refactoring trace created by WikiWhirl.
+ */
+
+texttransformation FreeMind2MediaWiki (in ww:"www.onekin.org/wikiwhirl", in diff: "http://www.eclipse.org/emf/compare/diff/1.1", in Ecore: "http://www.eclipse.org/emf/2002/Ecore") {
+	var timestamp : String
+	var random : String
+	var lastRevisionId : String
+	var userId: String
+	var userName: String
+	var lastTextId: String
+	var lastPageId: String
+	var lastLogId: String 
+
+//-------------------------------------------------------------------------------------------
+//-------------------INICIO printSQL.m2t--------------------------------------------------
+//--------------------------------------------------------------------------------------------
+
+
+property BLOG_GENERATOR_PATH : String = "D:\\workspace\\BlogGenerator\\src\\org\\onekin\\blojsom\\mdd\\";
+property BLOG_GENERATOR_MAIN : String = "BlogGeneratorDB.java";	
+var fileBlogGeneratorName : String = BLOG_GENERATOR_PATH + BLOG_GENERATOR_MAIN;
+var DiffSize : Integer = 6;
+
+//---------------------------------------------------------------------------------
+//FUNCTIONS FOR "DELETE COLUMN"
+//---------------------------------------------------------------------------------
+//returns the position of a column in a table
+//example: getPosition ('column2', insert into table (column1, column2) values (value1, value2))
+//returns 2
+getPosition (column : String, statement : String) : Integer {
+	var resultado:Integer = 1;
+	statement.substringBefore(column)->forEach(it){
+		if (it = ","){
+		  resultado += 1;
+		}
+	}
+	result = resultado;	
+}
+	
+//deletePosition('(value, value, slug, value)',3) returns Sequence{'(value', 'value', 'value)'}
+deletePosition (param1 : String, param2 : Integer) : String {
+	var index:Integer = 0;
+	var resultado:String = "";
+	param1->forEach(char){
+	  if (char.equals(",")){
+	    index += 1;
+	  }
+	  if (index <> param2 - 1){
+	    resultado += char;
+	  } //else: if we are in the param2, ignore it
+	}
+	result = resultado;
+}
+
+deleteColumn(statement: String, column: String): String {
+	result = statement.substringBefore(column + ",") + statement.substringAfter(column + ",").substringBefore("values (") + "values (" + deletePosition(statement.substringAfter("values ("), getPosition(column, statement))
+}
+
+//-------------------------------------------------------------------------------
+//FUNCTIONS FOR "MERGE COLUMNS"
+//-------------------------------------------------------------------------------
+
+//returns:  Sequence {'dbuser', 'entry'}
+getRemoveModelElementsRight () : List {
+	var list1:List;
+	diff.objectsOfType(diff.RemoveModelElement)->forEach(rme:diff.RemoveModelElement) { 
+  			list1.add(rme.rightParent.substring(DiffSize, rme.rightParent.size()));
+	}
+}
+
+//mergePosition('(value, value, slug)', 2, 'value') returns Sequence(value, valuevalue, slug)
+mergePosition (param: String, posicion : Integer, value : String) : String {
+	var returnvalue:String = "";
+	var index:Integer = 1;
+	var charbefore:String = "";
+	param->forEach(char){
+	  if (char != ")"){
+	    if (char = ","){
+	      if (index = posicion){
+	        if (charbefore = "'"){
+	          returnvalue = returnvalue.substring(0, returnvalue.size()-1) + "-" + value.substring(1,value.size()-1) + "'" + char;
+	        }else{
+	          returnvalue = returnvalue + "-" + value + char;
+	        }
+	          
+	      }else{
+	        returnvalue += char;
+	      }
+	       index += 1;
+	    }else{
+	      returnvalue += char;
+	    }
+	  }else{
+	    returnvalue += char;
+	  }
+	  charbefore = char;
+	}
+	result = returnvalue;
+}
+
+deletedValue (statement : String, posicion : Integer) : String {
+	//statement.split('values ')->last().split(',')->at(posicion)
+	var resultado:String = "";
+	var index:Integer = 1;
+	statement.substringAfter("values ")->forEach(char){
+	  if (index = posicion and not char.equals(",")){
+	    resultado += char;
+	  } 
+	  if (char.equals(",")){
+	    index += 1;
+	  }
+	  
+	}
+	result = resultado;
+}
+
+deleteColumnMerge(statement: String, column: String): String {
+  //statement.split(column.concat(','))->first()->toString().concat(statement.split(column.concat(','))->last()).split('values ')->first().concat('values '.concatSequence(self.mergePosition(self.deletePosition(statement.split('values ')->last(), self.getPosition(column, statement)), 3, self.deletedValue(statement, 3))))
+	result = statement.substringBefore(column + ",") + statement.substringAfter(column + ",").substringBefore("values (") + "values (" + mergePosition(deletePosition(statement.substringAfter("values ("), getPosition(column, statement)), 3, deletedValue(statement, 3))
+}
+
+//column1: 'user_name', column2: 'user_email'
+updateColumn (statement : String, column1 : String, column2 : String) : String {
+  if (statement.indexOf(column2) > 0){
+    result = statement.substring(1, statement.indexOf(column2)) + column1 + "-" + column2 + "," + statement.substring(statement.indexOf(column2) + column2.size() + 1, statement.size());
+  }else{
+   	result = ""; 
+  }
+	
+}
+
+//Delete column "user_name" from table "dbuser",
+//change name of column "user_email" to "user_name-user_email" and
+//concat values of "user_name" and "user_email" in "user_name-user_email"
+//column1: 'user_name', column2: 'user_email'
+mergeColumns (statement : String, column1 : String, column2 : String) : String {
+  var delete:String = deleteColumnMerge(statement, column1);
+	result = updateColumn(delete, column1, column2);
+}
+
+//-------------------------------------------------------------------------------
+//FUNCTIONS FOR "ADD COLUMN"
+//-------------------------------------------------------------------------------
+//(cl_from, cl_to, cl_sortkey, cl_timestamp), cl_type -> (cl_from, cl_to, cl_sortkey, cl_timestamp, cl_type)
+addColumn(columns: String, column: String): String {
+  if(columns.size()>0){
+     result = columns.substring(0, columns.size()-2) + "," + column + ")";
+  }else{
+    result = "";
+  }
+}
+//(value1, value2), value3 -> (value1, value2, value3)
+addValue(valores: String, valor: String): String {
+  if(valores.size()>0){
+    result = valores.substring(0, valores.size()-2) + "," + valor + ")";
+  }else{
+    result = "";
+  }
+}
+addColumnValue(statement: String, column: String, value: String): String {
+  var columns: String = "";
+  var valores: String = "";
+  if(statement.subStringBefore("VALUES").size()>0){
+    columns = "(" + statement.subStringBefore("VALUES").subStringAfter("(");
+  }else{
+     columns = "(" + statement.subStringBefore("values").subStringAfter("(");
+  }
+  if(statement.subStringAfter("VALUES").size()>0){
+    valores = statement.subStringAfter("VALUES");
+  }else{
+    valores = statement.subStringAfter("VALUES");
+  }
+	result = statement.subStringBefore("(") + addColumn(columns, column) + " VALUES " + addValue(valores, value);
+
+}
+
+//Adapter
+printSQL(statement: String){
+ var tableName : String = statement.subStringBefore("(").subStringAfter("into ").trim();
+  	//file ( "D:/Dropbox/workspace_dropbox/WikiWhirlEvolution/models/FreeMind_MediaWiki.sql" )
+  	file ( "C:/Users/Jokin/Desktop/Batch_MofscriptAdaptation/models/FreeMind_MediaWiki.sql" )
+  	//RENAME TABLE case. Example: no hay
+	  diff.objectsOfType(diff.UpdateAttribute)->forEach(ua:diff.UpdateAttribute | statement.indexOf(ua.leftElement.name)>0){
+	    stdout.println("RENAME TABLE case");
+  		println("		sql = \"insert into " + ua.rightElement.name + statement.substringAfter(ua.leftElement.name));
+	  }
+	
+	//DELETE COLUMN case. Example: "user_options" is removed from table "user"
+	  diff.objectsOfType(diff.RemoveModelElement)->forEach(rme:diff.RemoveModelElement | statement.indexOf(rme.rightParent._getFeature("name").subStringAfter("_"))>0){
+	    stdout.println("DELETE COLUMN case");
+  		println(deleteColumn(statement, rme.leftElement.name));
+	  }
+	
+	//ADD COLUMN case. Example: add columns "cl_sortkey_prefix", "cl_type" and "cl_collation". cl_type is the only NN with default= 'page'
+	//Check if the added attribute is "Not Null" (NN). In case it is, check if there is a "Default" value
+	//If there is: use it. If there is not: use a default value according to the type
+	//Example: insert into categorylinks (cl_from, cl_to, cl_sortkey, cl_timestamp) VALUES (@pageid,'''+categoryTitle+''','''+pageTitle''',+timestamp+''';'')
+	//to:  insert into categorylinks (cl_from, cl_to, cl_sortkey, cl_timestamp, cl_type) VALUES (@pageid,'''+categoryTitle+''','''+pageTitle''',+timestamp+ 'page'''';'')
+	var newStatement: String = statement;
+	  diff.objectsOfType(diff.AddModelElement)->forEach(ame:diff.AddModelElement | ame.leftParent.name.subStringAfter("_")=tableName) { 
+  		stdout.println("ADD COLUMN case");
+  		Ecore.objectsOfType(Ecore.EAttribute)->forEach(ea:Ecore.EAttribute | ea.name = ame.rightElement.name){
+  			//if(ea.defaultValue = "true"){ //mal
+  			  //check if the added attribute is NN. derived is the Ecore attribute used for DB is_nullable
+  			  if(ea.derived = false){ //not necessary a default value
+  			    stdout.println("print1");
+  			    //println(addColumnValue(statement, ame.rightElement.name, ea.defaultValueLiteral));
+  			  }
+  			  if(ea.derived = true){
+  			    if(ea.eType.name = "EString"){
+  			      //println(addColumnValue(statement, ame.rightElement.name, ea.defaultValueLiteral));
+  			      newStatement = addColumnValue(statement, ame.rightElement.name, ea.defaultValueLiteral);
+  			    }
+  			    //if it is Integer -> 0
+  			    if(ea.eType.name = "EInt"){
+  			       //println(addColumnValue(statement, ame.rightElement.name, '0'));
+  			       newStatement = addColumnValue(statement, ame.rightElement.name, '0');
+  			    }
+  			    //if it is Long -> 0
+  			    if(ea.eType.name = "ELong"){
+  			       //println(addColumnValue(statement, ame.rightElement.name, '0'));
+  			       newStatement = addColumnValue(statement, ame.rightElement.name, '0');
+  			    }
+  			  }//ea.derived
+  		 //}//if ea.defaultValue 
+  		}//foreach 
+	}//ADD COLUMN
+	println(newStatement);
+  	newStatement = "";
+	//REMOVE TABLE. Example: trackbacks table
+	 diff.objectsOfType(diff.RemoveModelElement)->forEach(ua:diff.RemoveModelElement | statement.indexOf(ua.leftElement.name)>0){
+	 	stdout.println("REMOVE TABLE case");
+	 }
+}//printSQL
+
+
+
+//----------------------------------------------------------------------------------------------------------------
+//--------------Fin printSQL.m2t--------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+	
+	ww.WW_Process::main () {
+	  	var currentDir : String = getenv("user.dir")
+		//file ( currentDir + "/plugins/WikiWhirl/WikiWhirl.MofScript/models/FreeMind_MediaWiki.sql" )
+		//file ( "D:/Dropbox/workspace_dropbox/WikiWhirlEvolution/models/FreeMind_MediaWiki.sql" )
+		//file ( "C:/Users/Jokin/Dropbox/workspace_dropbox/WikiWhirlEvolution/models/FreeMind_MediaWiki.sql" )
+		file("C:/Users/Jokin/Desktop/Example/models/FreeMind_MediaWiki.sql")
+		timestamp = "(DATE_FORMAT(CURRENT_TIMESTAMP(), '%Y%m%d%k%i%s'))"
+		random = "RAND()"
+		lastRevisionId = "(select if((SELECT count(*) FROM revision ORDER BY rev_id DESC LIMIT 1)>0,(SELECT rev_id FROM revision ORDER BY rev_id DESC LIMIT 1)+1, 1))"
+		userId = "1"
+		userName = "WikiSysop"
+		lastTextId = "(SELECT old_id FROM text ORDER BY old_id DESC LIMIT 1) + 1"
+		lastPageId = "(SELECT page_id FROM page ORDER BY page_id DESC LIMIT 1)"
+		lastLogId = "(SELECT log_id FROM logging ORDER BY log_id DESC LIMIT 1)"
+		
+		self.ww_Operations-> forEach(op:ww.WW_Operation){
+		  if (op.oclIsTypeOf(ww.Create))
+			op.create_sql()
+		  else if  (op.oclIsTypeOf(ww.Categorize))
+			op.categorize_sql()
+		  else if  (op.oclIsTypeOf(ww.Uncategorize))
+			op.uncategorize_sql()
+		  else if  (op.oclIsTypeOf(ww.Rename))
+			op.rename_sql()
+		  else if  (op.oclIsTypeOf(ww.Drop))
+			op.drop_sql()
+		  else if  (op.oclIsTypeOf(ww.Move))
+			op.move_sql()
+		  else if  (op.oclIsTypeOf(ww.Split))
+			op.split_sql()
+		  else if  (op.oclIsTypeOf(ww.Merge))
+			op.merge_sql()
+		  else		  
+		   	stdout.println("error")
+		}
+	}
+	
+	ww.Create::create_sql(){
+		newline(1)
+		var namespace : String
+		var namespaceString : String
+		var wikiRes : ww.WikiResource = self.arguments.first().wikiResource
+		var pageTitle : String = wikiRes.title
+		var comment : String
+		var link : String
+
+	  	if (wikiRes.oclIsKindOf(ww.Article)){
+	  		namespaceString = "article"	  	  
+	  		namespace = "0"
+	  		link = "[[" + pageTitle + "]]"
+	  	} else if (wikiRes.oclIsKindOf(ww.Category)){
+	  	  	namespaceString = "category"
+	  	  	namespace = "14"
+	  	  	link = "[[Category:" + pageTitle + "]]"
+	  	}
+	  	println("#Create " + namespaceString + " " + pageTitle)
+	  	
+	  	comment = namespaceString.firstToUpper() + " " + link + " created by WikiWhirl"
+	  	//Begin transaction
+	  	println("START TRANSACTION;")
+	  	
+	  	createPage(pageTitle, namespace, comment.replace("\\[\\[Category", "\\[\\[:Category"))
+		//End transaction
+		println("COMMIT;")
+	}
+  
+  	ww.Categorize::categorize_sql(){
+ 		newline(1)
+		var namespace : String
+		var namespaceString : String
+		var comment : String
+		var link : String
+		var wikiRes1 : ww.WikiResource = self.arguments.first().wikiResource
+		var pageTitle : String = wikiRes1.title
+		var wikiRes2 : ww.WikiResource = self.arguments.last().wikiResource
+		var categoryTitle : String = wikiRes2.title
+		var pageRevisionId : String = "(SELECT rev_id FROM (SELECT * FROM revision) as x where rev_page = @pageId ORDER BY rev_id DESC LIMIT 1)"
+		var pageLen : String = "(SELECT page_len FROM page where page_id = @pageId)"
+		var pageText : String = "(SELECT old_text from (SELECT * FROM text) as x where old_id = (SELECT rev_text_id FROM revision where rev_page = @pageId ORDER BY rev_id DESC LIMIT 1))"
+		
+		if (wikiRes1.oclIsKindOf(ww.Article)){
+		  	namespaceString = "article"
+	  		namespace = "0"
+	  		link = "[[" + pageTitle + "]]"
+	  		
+	  	}else if (wikiRes1.oclIsKindOf(ww.Category)){
+	  		namespaceString = "category"
+	  	  	namespace = "14"
+	  	  	link = "[[Category:" + pageTitle + "]]"
+	  	}
+	  	println("#Categorize " + namespaceString + " " + pageTitle + " with category " + categoryTitle)
+	  	comment = namespaceString.firstToUpper() + " " + link + " categorized by WikiWhirl with category: " +  categoryTitle
+	  	println("START TRANSACTION;")
+	  	print("UPDATE category set ")
+	  	if (namespace.equals("0")){
+		  print("cat_pages = cat_pages + 1")
+		}else if (namespace.equals("14")){
+		  print("cat_subcats = cat_subcats + 1")
+		}
+		println(" where cat_title = '" + categoryTitle + "';")
+	  	print("set @pageId = (SELECT page_id FROM page WHERE page_title='")
+	  	println(pageTitle + "' and page_namespace=" + namespace + ");")
+		//IMPACT
+		println("MODIFIED")
+		//ADD ATTRIBUTE
+		printSQL("INSERT into categorylinks (cl_from, cl_to, cl_sortkey, cl_timestamp) VALUES (@pageId, '" + categoryTitle + "','" + pageTitle + "', " + timestamp + ");")
+	  	//REMOVE TABLE
+	  	printSQL("INSERT into trackbacks (tb_name, tb_title, tb_url, tb_ex, tb_id, tb_page) VALUES ('trackback1', 'title', 'http://blog/post', '', '', '')")
+	  	//REMOVE ATTRIBUTE
+	  	printSQL("INSERT into user (user_id, user_name, user_real_name, user_password, user_newpassword, user_newpass_time, user_email, user_options, user_touched, user_token, user_email_token_expires, user_registration, user_editcount) VALUES ('1', 'Jokin', 'Jokin Garcia', 'c7c105fac2d29c1f420865f9e50b4ab3', '', NULL, 'jokin.garcia@ehu.es', 'quickbar=1', '20110902144454', 'd863a16e41accc0acb8323a15373129b', '', NULL, NULL, '20070718151421', '1360')")
+		print("UPDATE page set page_touched = " + timestamp + " and page_counter = page_counter + 1 and page_is_new = 0 and page_latest = ")
+		print(lastRevisionId + "and page_len = page_len + " + categoryTitle.size() + " + " + "[[Categoy:]]".size() + " where page_namespace = ")
+		println(namespace + " and page_title = '" + pageTitle + "';")
+		
+		println("UPDATE page set page_touched = " + timestamp + " where page_namespace = 14 and page_title = '" + categoryTitle + "';")
+	  	//Insert into recentchanges
+	  	print("INSERT IGNORE into recentchanges (rc_timestamp, rc_cur_time, rc_user, rc_user_text, rc_namespace, rc_title, ")
+	  	print("rc_comment, rc_new, rc_cur_id, rc_this_oldid, rc_last_oldid, rc_type, rc_old_len, rc_new_len, rc_deleted) VALUES (")
+		print(timestamp + ", " + timestamp + ", " + userId + ", '" + userName + "', " + namespace)
+		print(", '" + pageTitle + "', '" + comment + "', 0, @pageId, " + lastRevisionId)
+		println(", " + pageRevisionId + ", 0, " + pageLen + ", " + pageLen + " + " + categoryTitle.size() + " + " + "[[Categoy:]]".size()  + ", 0);")
+		//Insert into revision
+		//IMPACT
+		print("INSERT IGNORE into revision (rev_page, rev_text_id, rev_comment, rev_user, rev_user_text, rev_timestamp, rev_minor_edit, ")
+		print("rev_deleted, rev_len, rev_parent_id) VALUES (@pageId, " + lastTextId + ", '" + comment + "', " + userId + ", '" + userName)
+		println("', " + timestamp + ", 0, 0, " + pageLen + " + " + categoryTitle.size() + " + " + "[[Categoy:]]".size()  + ", " + pageRevisionId + ");")
+		//Insert into searchindex. Only MyISAM table 
+		//print("INSERT IGNORE into searchindex(si_page, si_title, si_text) VALUES (" + @pageId + ", '" + pageTitle + "', 'CONCAT(pageText, '[[Category:',") 
+		//println(categoryTitle + " ']]');")
+		//Insert into text
+		println("INSERT IGNORE into text (old_text, old_flags) VALUES (CONCAT(" + pageText + ", '[[Category:" + categoryTitle + "]]'), 'utf-8');")
+		//Update user
+		println("UPDATE user set user_touched = " + timestamp + " and user_editcount = user_editcount + 1 where user_id = " + userId + ";")
+  	  	//End transaction	
+		println("COMMIT;")
+	}
+	
+	ww.Uncategorize::uncategorize_sql(){
+		newline(1)
+		var namespace : String
+		var namespaceString : String
+		var link : String
+		//The page to be uncategorized
+		var wikiRes1 : ww.WikiResource = self.arguments.first().wikiResource
+		var pageTitle : String = wikiRes1.title
+		//The category
+		var wikiRes2 : ww.WikiResource = self.arguments.last().wikiResource
+		var categoryTitle : String = wikiRes2.title
+		var pageRevisionId : String = "(SELECT rev_id FROM (SELECT * FROM revision) as x where rev_page = @pageId ORDER BY rev_id DESC LIMIT 1)"
+		var pageLen : String = "(SELECT page_len FROM page where page_id = @pageId)"
+		var pageText : String = "(SELECT old_text from (SELECT * FROM text) as x where old_id = (SELECT rev_text_id FROM revision where rev_page = @pageId ORDER BY rev_id DESC LIMIT 1))"
+		var comment : String
+		if (wikiRes1.oclIsKindOf(ww.Article)){
+		  	namespaceString = "article"
+	  		namespace = "0"
+	  		link = "[[" + pageTitle + "]]"
+	  		
+	  	}else if (wikiRes1.oclIsKindOf(ww.Category)){
+	  		namespaceString = "category"
+	  	  	namespace = "14"
+	  	  	link = "[[Category:" + pageTitle + "]]"
+	  	}
+	  	println("#Uncategorize " + namespaceString + " " + pageTitle + " with category " + categoryTitle)
+	  	comment = namespaceString.firstToUpper() + " " + link + " uncategorized by WikiWhirl with category: " +  categoryTitle
+	  	
+	  	//Begin transaction
+	  	println("START TRANSACTION;")
+	  	//Update category
+	  	print("UPDATE category set ")
+	  	if (namespace.equals("0")){
+		  print("cat_pages = cat_pages - 1")
+		}else if (namespace.equals("14")){
+		  print("cat_subcats = cat_subcats - 1")
+		}
+		println("where cat_title = '" + categoryTitle + "';")
+		//Set PageId
+	  	print("set @pageId = (SELECT page_id FROM page WHERE page_title='")
+	  	println(pageTitle + "' and page_namespace=" + namespace + ");")
+		//Delete categorylinks
+		println("DELETE from categorylinks where cl_from = @pageId and cl_to ='" + categoryTitle + "';")
+		//Update page wikiRes1
+		print("UPDATE page set page_touched = " + timestamp + " and page_counter = page_counter + 1 and and page_latest = ")
+		print(lastRevisionId + "and page_len = page_len - " + categoryTitle.size() + " - " + "[[Categoy:]]".size() + " where page_namespace = ")
+		println(namespace + " and page_title = '" + pageTitle + "';")
+		//Update page wikiRes2
+		println("UPDATE page set page_touched = " + timestamp + " where page_namespace = 14 and page_title = '" + categoryTitle + "';")
+		//Insert into recentchanges
+	  	print("INSERT IGNORE into recentchanges (rc_timestamp, rc_cur_time, rc_user, rc_user_text, rc_namespace, rc_title, ")
+	  	print("rc_comment, rc_new, rc_cur_id, rc_this_oldid, rc_last_oldid, rc_type, rc_old_len, rc_new_len, rc_deleted) VALUES (")
+		print(timestamp + ", " + timestamp + ", " + userId + ", '" + userName + "', " + namespace)
+		print(", '" + pageTitle + "', '" + comment + "', 0, @pageId, " + lastRevisionId)
+		println(", " + pageRevisionId + ", 0, " + pageLen + ", " + pageLen + " - " + categoryTitle.size() + " - " + "[[Categoy:]]".size()  + ", 0);")
+		//Insert into revision
+		//IMPACT
+		print("INSERT IGNORE into revision (rev_page, rev_text_id, rev_comment, rev_user, rev_user_text, rev_timestamp, rev_minor_edit, ")
+		print("rev_deleted, rev_len, rev_parent_id) VALUES (@pageId, " + lastTextId + ", '" + comment + "', " + userId + ", '" + userName + "', ")
+		print(timestamp + ", 0, 0, " + pageLen + " - " + categoryTitle.size() + " - " + "[[Categoy:]]".size()  + ", " + pageRevisionId + ");")
+		//Insert into searchindex. Only MyISAM table 
+		//print("INSERT IGNORE into searchindex(si_page, si_title, si_text) VALUES (" + @pageId + ", '" + pageTitle + "', REPLACE(pageText, '[[Category:',")
+		 //println(categoryTitle + " ']]', '');")
+		//Insert into text
+		println("INSERT IGNORE into text (old_text, old_flags) VALUES (REPLACE(pageText, '[[Category:'," + categoryTitle + " ']]', ''), 'utf-8');")
+		//Update user
+		println("UPDATE user set user_touched = " + timestamp + " and user_editcount = user_editcount + 1 where user_id = " + userId + ";")
+  	  	//End transaction	
+		println("COMMIT;")
+	}
+	
+	//Recentchanges, talk page, redirect page
+	//It is not possible to rename a category in MediaWiki. It is necessary to create a new
+	//category, copy the editable part, change the category tag manually on every page
+	//that link to that category. Redirect the old category to the new category. This is
+	//automatically done in WikiWhirl
+	ww.Rename::rename_sql(){
+		newline(1)
+		var namespace : String
+		var namespaceString : String
+		var talkNamespace : String
+		var link : String
+		var comment : String 
+		//The page to be renamed
+		var wikiRes1 : ww.WikiResource = self.arguments.first().wikiResource
+		//modified
+		//var pageTitle : String = wikiRes1.title
+		var pageTitle : String = "pageTitle"
+		//The new name
+		var wikiRes2 : ww.WikiResource = self.arguments.last().wikiResource
+		//modified
+		//var newPageTitle : String = wikiRes2.title
+		var newPageTitle : String = "newPageTitle"
+		var pageRevisionId : String = "(SELECT rev_id FROM (SELECT * FROM revision) as x where rev_page = @pageId ORDER BY rev_id DESC LIMIT 1)"
+		
+		if (wikiRes1.oclIsKindOf(ww.Article)){
+		  	namespaceString = "article"
+	  		namespace = "0"
+	  		talkNamespace = "1"
+	  		link = "[[" + pageTitle + "]]"
+	  	}else if (wikiRes1.oclIsKindOf(ww.Category)){
+	  	  	namespaceString = "category"
+	  	  	namespace = "14"
+	  	  	talkNamespace = "15"
+	  	  	link = "[[Category:" + pageTitle + "]]"
+	  	}
+	  	println("#Rename " + namespaceString + " " + pageTitle + " to " + newPageTitle)
+	  	
+	  	comment = namespaceString.firstToUpper() + " " + link + " renamed by WikiWhirl to " + newPageTitle
+	  	
+	  	//Begin transaction
+	  	println("START TRANSACTION;")
+	  	//Set PageId
+	  	print("set @pageId = (SELECT page_id FROM page WHERE page_title='")
+	  	println(pageTitle + "' and page_namespace=" + namespace + ");")
+	  	//Update categorylinks
+	  	println("UPDATE categorylinks set cl_sortkey = " + newPageTitle + " where cl_from = @pageId;")
+	  	//Insert into logging
+	  	print("INSERT into logging (log_type, log_action, log_timestamp, log_user, log_user_text, log_namespace, log_title, log_page, log_comment, ")
+	  	print("log_params, log_deleted) VALUES ('move', 'move', " + timestamp + ", " + userId + ", '" + userName + "', " + namespace + ", '")
+	  	println(pageTitle + "'," + lastPageId + " + 1, '" + comment + "', '" + pageTitle +"', 0);")
+	  	//Update page
+	  	println("UPDATE page set page_title = '" + newPageTitle + "' and page_touched =" + timestamp + " and page_latest = " + lastRevisionId + ";")
+	  	//Insert into page (old page as new page)
+ 		print("INSERT IGNORE into page (page_namespace, page_title, page_counter, page_is_redirect, page_is_new, page_random,")
+	  	print("page_touched, page_latest, page_len) VALUES (")
+	  	print(namespace + ", '" + pageTitle  + "', 0, 1, 1, " + random  + ", " +  timestamp + ", " + lastRevisionId + " + 1, " + "#REDIRECT [[".size())
+	  	println(" + " + newPageTitle + " + " + "]]".size() + ");")
+	  	//Insert into pagelinks
+	  	println("INSERT into pagelinks (pl_from, pl_namespace, pl_title) VALUES(" + lastPageId + ", " + namespace + ", '" + newPageTitle + "');") 
+		//Insert into recentchanges
+	  	print("INSERT IGNORE into recentchanges (rc_timestamp, rc_cur_time, rc_user, rc_user_text, rc_namespace, rc_title, ")
+	  	print("rc_comment, rc_new, rc_cur_id, rc_this_oldid, rc_last_oldid, rc_type, rc_deleted, rc_logid, ")
+		print("rc_log_type, rc_log_action, rc_params) VALUES (" + timestamp + ", " + timestamp + ", " + userId + ", '" + userName + "', " + namespace)
+		println(", '" + pageTitle + "', '" + comment + "', 0, " + lastPageId + ", 0, 0, 3, 0," + lastLogId + ", 'move', 'move', '" + newPageTitle + "');")
+		//Insert into redirect
+		println("INSERT into redirect (rd_from, rd_namespace, rd_title) VALUES (" + lastPageId + ", " + namespace + ", '" + newPageTitle + "');")
+		//Insert into revision pageTitle
+		//IMPACT
+		print("INSERT IGNORE into revision (rev_page, rev_text_id, rev_comment, rev_user, rev_user_text, rev_timestamp, rev_minor_edit, ")
+		print("rev_deleted, rev_len, rev_parent_id) VALUES (@pageId, " + lastTextId + ", 'moved [[" + pageTitle + "]] to [[" + newPageTitle + "]]: renamed")
+		print("by WikiWhirl', " + userId + ", '" + userName + "', " + timestamp + ", 1, 0, " + "#REDIRECT [[".size() + newPageTitle + " + " + "]]".size())
+		println(", " + pageRevisionId + ");")
+		//Insert into revision newPageTitle
+		//IMPACT
+		print("INSERT IGNORE into revision (rev_page, rev_text_id, rev_comment, rev_user, rev_user_text, rev_timestamp, rev_minor_edit, ")
+		print("rev_deleted, rev_len, rev_parent_id) VALUES (" + lastPageId + ", " + lastTextId + " + 1, 'moved [[" + pageTitle + "]] to [[" + newPageTitle + "]]: renamed")
+		println("by WikiWhirl', " + userId + ", '" + userName + "', " + timestamp + ", 0, 0, " + "#REDIRECT [[".size() + newPageTitle + " + " + "]]".size() + " 0);")
+		//Insert into searchindex pageTitle. Only MyISAM table 
+		//println("INSERT IGNORE into searchindex(si_page, si_title, si_text) VALUES (" + @pageId + ", '" + pageTitle + "', ''")
+		//Insert into searchindex newPageTitle. Only MyISAM table 
+		//println("INSERT IGNORE into searchindex(si_page, si_title, si_text) VALUES (" + NEW PAGEID + ", '" + newPageTitle + "', ''")
+		//Insert into text
+		println("INSERT IGNORE into text (old_text, old_flags) VALUES ('#REDIRECT [[" + newPageTitle + "]]', 'utf-8');")
+		//Update user
+		println("UPDATE user set user_touched = " + timestamp + " where user_id = " + userId + ";")
+		
+		//Only categories. Change the category tag on every page that link to that category.
+		if (namespaceString.equals("category")){
+			//Update text
+			print("UPDATE text set old_text = REPLACE(old_text, '[[Category:" + pageTitle + "]]', '[[Category:" + newPageTitle + "]]') where old_id in (SELECT rev_text_id FROM revision where rev_page in ")
+			println("(SELECT cl_from FROM software.categorylinks where cl_to ='" + pageTitle + "'));")
+			//Update categorylinks
+			println("UPDATE categorylinks set cl_to = '" + newPageTitle + "' where cl_to = '" + pageTitle + "';")
+	  	}
+	  	//Create a talk page to let users a discussion place about the rename
+	  	println("#Create talk for " + namespaceString + " " + newPageTitle) 
+	  	createPage(newPageTitle, talkNamespace, comment)
+		//End transaction	
+		println("COMMIT;")
+		
+	}
+	
+	ww.Drop::drop_sql(){
+		newline(1)
+		var namespace : String
+		var namespaceString : String
+		var talkNamespace : String
+		var comment : String
+		var link : String
+		//The page to be deleted
+		var wikiRes : ww.WikiResource = self.arguments.first().wikiResource
+		var pageTitle : String = wikiRes.title
+		
+		if (wikiRes.oclIsKindOf(ww.Article)){
+		  	namespaceString = "article"
+	  		namespace = "0"
+	  		talkNamespace = "1"
+	  		link = "[[" + pageTitle + "]]"
+	  	}else if (wikiRes.oclIsKindOf(ww.Category)){
+	  	  	namespaceString = "category"
+	  	  	namespace = "14"
+	  	  	talkNamespace = "15"
+	  	  	link = "[[Category:" + pageTitle + "]]"
+	  	}
+	  	println("#Drop " + namespaceString + " " + pageTitle)
+	  	
+	  	comment = "deleted " + namespaceString.firstToUpper() + " " + link
+
+	  	//Begin transaction
+	  	println("START TRANSACTION;")
+	  	//Set PageId
+	  	print("set @pageId = (SELECT page_id FROM page WHERE page_title='")
+	  	println(pageTitle + "' and page_namespace=" + namespace + ");")
+		//Insert into archive
+		//IMPACT
+		print("INSERT into archive (ar_namespace, ar_title, ar_comment, ar_user, ar_user_text, ar_timestamp, ar_minor_edit, ar_flags, ar_rev_id, ")
+		print("ar_text_id, ar_len, ar_page_id, ar_parent_id) SELECT " + namespace + ", '" + pageTitle + "', rev_comment, " + userId + ", '") 
+		print(userName + "', rev_timestamp, rev_minor_edit, old_flags, rev_id, old_id, rev_len, @pageId, rev_parent_id FROM revision INNER JOIN ")
+		println("text ON revision.rev_text_id = text.old_id where revision.rev_page = @pageId;")
+		//Insert into logging
+		print("INSERT into logging (log_type, log_action, log_timestamp, log_user, log_user_text, log_namespace, log_title, log_page, log_comment, ")
+	  	print("log_params, log_deleted) VALUES ('delete', 'delete', " + timestamp + ", " + userId + ", '" + userName + "', " + namespace + ", '")
+	  	println(pageTitle + "', 0, '" + comment + "', '" + pageTitle +"', 0);")
+	  	//Delete from recentchanges
+	  	println("DELETE from recentchanges where rc_cur_id = @pageId;")
+	  	//Insert into recentchanges
+	  	print("INSERT IGNORE into recentchanges (rc_timestamp, rc_cur_time, rc_user, rc_user_text, rc_namespace, rc_title, ")
+	  	print("rc_comment, rc_new, rc_cur_id, rc_this_oldid, rc_last_oldid, rc_type, rc_deleted, rc_logid, ")
+		print("rc_log_type, rc_log_action) VALUES (" + timestamp + ", " + timestamp + ", " + userId + ", '" + userName + "', " + namespace)
+		println(", '" + pageTitle + "', '" + comment + "', 0, 0, 0, 0, 3, 0," + lastLogId + ", 'delete', 'delete');")
+		//Delete from revision
+		println("DELETE from revision where rev_page = @pageId;")
+		//Delete from page
+	  	println("DELETE from page where page_title ='" + pageTitle + "' and page_namespace =" + namespace + " ;")
+	  	//End transaction	
+		println("COMMIT;")
+	}
+
+	ww.Move::move_sql(){
+		newline(1)
+		var namespace1 : String
+		var namespaceString1 : String
+		var talkNamespace1 : String
+		var comment1 : String
+		var link1 : String
+		var namespace2 : String
+		var namespaceString2 : String
+		var talkNamespace2 : String
+		var comment2 : String
+		var link2 : String
+		var counter : Integer = 0
+		var wikiSection : ww.Section
+		var sectionTitle : String
+		var wikiRes1 : ww.WikiResource
+		var pageTitle1 : String
+		var wikiRes2 : ww.WikiResource
+		var pageTitle2 : String
+		var pageLen1 : String = "(SELECT page_len FROM page where page_id = @pageId1)"
+		var pageLen2 : String = "(SELECT page_len FROM page where page_id = @pageId2)"
+		var pageRevisionId1 : String = "(SELECT rev_id FROM (SELECT * FROM revision) as x where rev_page = @pageId1 ORDER BY rev_id DESC LIMIT 1)"
+		var pageRevisionId2 : String = "(SELECT rev_id FROM (SELECT * FROM revision) as x where rev_page = @pageId2 ORDER BY rev_id DESC LIMIT 1)"
+		
+		//With section content, if not needed, 1st locate + CHAR_LENGTH('== "+ sectionTitle + " ==')
+		var sectionContent : String = "(SELECT substring(old_text, LOCATE('== " + sectionTitle + " ==', old_text), " +
+									  "LOCATE('==', old_text, LOCATE('== " + sectionTitle + " ==', old_text)+ CHAR_LENGTH('== " + 
+									  sectionTitle + " ==')) - LOCATE('== " + sectionTitle + " ==', old_text) - CHAR_LENGTH('== " + 
+									  sectionTitle + " ==')) FROM revision INNER JOIN text ON revision.rev_text_id = text.old_id" +
+									  " where rev_page = @pageId1 ORDER BY old_id DESC LIMIT 1)"
+		var page1Text : String = "(SELECT old_text from (SELECT * FROM text) as x where old_id = (SELECT rev_text_id FROM revision where rev_page = " +
+									"@pageId1 ORDER BY rev_id DESC LIMIT 1))"
+		var page2Text : String = "(SELECT old_text from (SELECT * FROM text) as x where old_id = (SELECT rev_text_id FROM revision where rev_page = " +
+									"@pageId2 ORDER BY rev_id DESC LIMIT 1))"
+		var sectionContentLength : String = "(SELECT CHAR_LENGTH(" + sectionContent + "))"		
+          		
+		self.arguments->forEach(arg:ww.Argument){
+		  var wikiResource : ww.WikiResource = arg._getFeature("wikiResource")
+			if(counter = 0){
+		 		//The section
+				wikiSection = wikiResource
+				sectionTitle = wikiResource.title
+		 	}else if(counter = 1){
+		 		//The source page
+		 		wikiRes1 =  wikiResource
+				pageTitle1 = wikiRes1.title
+		 	}else if(counter = 2){
+		 	  	//The target page
+				wikiRes2 = wikiResource
+				pageTitle2 = wikiRes2.title
+		 	}
+		 	counter = counter + 1
+		}
+		
+		if (wikiRes1.oclIsKindOf(ww.Article)){
+		  	namespaceString1 = "article"
+	  		namespace1 = "0"
+	  		talkNamespace1 = "1"
+	  		link1 = "[[" + pageTitle1 + "]]"
+	  	}else if (wikiRes1.oclIsKindOf(ww.Category)){
+	  	  	namespaceString1 = "category"
+	  	  	namespace1 = "14"
+	  	  	talkNamespace1 = "15"
+	  	  	link1 = "[[Category:" + pageTitle1 + "]]"
+	  	}
+	  	
+		if (wikiRes2.oclIsKindOf(ww.Article)){
+		  	namespaceString2 = "article"
+	  		namespace2 = "0"
+	  		talkNamespace1 = "1"
+	  		link2 = "[[" + pageTitle2 + "]]"
+	  	}else if (wikiRes2.oclIsKindOf(ww.Category)){
+	  	  	namespaceString2 = "category"
+	  	  	namespace2 = "14"
+	  	  	talkNamespace2 = "15"
+	  	  	link2 = "[[Category:" + pageTitle2 + "]]"
+	  	}
+	  	
+	  	println("#Move section " + sectionTitle + " from " + namespaceString1 + " " + pageTitle1 + " to " + namespaceString2 + " " + pageTitle2)
+	  	
+	  	comment1 = "Content of the " + namespaceString1 + " " + link1 + " has been moved to " +  namespaceString2 + " " + link2 + 
+	  			  " by WikiWhirl"
+	  	comment2 = "The content of the " + namespaceString2 + " " + link2 + " has been copied from " +  namespaceString1 + " " + link1 + 
+	  			  " by WikiWhirl"
+	  	
+	  	//Since a summary is introduced in each page when a section is moved, a redirect is never done (no page blanking)
+	  	
+	  	//Begin transaction
+	  	println("START TRANSACTION;")
+	  		  	
+	  	//Set PageId1, source page
+	  	print("set @pageId1 = (SELECT page_id FROM page WHERE page_title='")
+	  	println(pageTitle1 + "' and page_namespace=" + namespace1 + ");")
+	  	//Set PageId2, target page
+	  	print("set @pageId2 = (SELECT page_id FROM page WHERE page_title='")
+	  	println(pageTitle2 + "' and page_namespace=" + namespace2 + ");")
+		
+		//Insert into revision, target page
+		//IMPACT
+		print("INSERT IGNORE into revision (rev_page, rev_text_id, rev_comment, rev_user, rev_user_text, rev_timestamp, rev_minor_edit, ")
+		print("rev_deleted, rev_len, rev_parent_id) VALUES (@pageId2, " + lastTextId + ", '" + comment2 + "', " + userId + ", '" + userName)
+		println("', " + timestamp + ", 0, 0, " + pageLen2 + " + " + sectionContentLength + ", " + pageRevisionId2 + ");")
+		//Insert into searchindex. Only MyISAM table, target page 
+		//println("INSERT IGNORE into searchindex(si_page, si_title, si_text) VALUES (" + @pageId2 + ", '" + pageTitle2 + "', CONCAT(old_text, sectionContent)")
+		//Insert into text, target page
+		println("INSERT IGNORE into text (old_text, old_flags) VALUES (CONCAT(" + page2Text + ", ' " + comment2.replace("\\[\\[Category", "\\[\\[:Category") + "\\n', " + sectionContent + ") , 'utf-8');")
+		
+		//Insert into revision, source page
+		//IMPACT
+		print("INSERT IGNORE into revision (rev_page, rev_text_id, rev_comment, rev_user, rev_user_text, rev_timestamp, rev_minor_edit, ")
+		print("rev_deleted, rev_len, rev_parent_id) VALUES (@pageId1, " + lastTextId + ", '" + comment1 + "', " + userId + ", '" + userName)
+		println("', " + timestamp + ", 0, 0, " + pageLen1 + " - " + sectionContentLength + ", " + pageRevisionId1 + ");")
+		//Insert into searchindex. Only MyISAM table, source page 
+		//print("INSERT IGNORE into searchindex(si_page, si_title, si_text) VALUES (" + @pageId + ", '" + pageTitle + "', REPLACE(pageText, '[[Category:',")
+		 //println(categoryTitle + " ']]', '');")
+		//Insert into text, source page
+		println("INSERT IGNORE into text (old_text, old_flags) VALUES (REPLACE('" + page1Text + "', '" + sectionContent + "', ' " + comment1.replace("\\[\\[Category", "\\[\\[:Category") + "') , 'utf-8');")
+		
+	  	//Create a talk page to let users a discussion place about the content movement in both pages
+	  	println("#Create talk for " + namespaceString1 + " " + pageTitle1) 
+	  	createPage(pageTitle1, talkNamespace1, comment1)
+	  	println("#Create talk for " + namespaceString2 + " " + pageTitle2)
+	  	createPage(pageTitle2, talkNamespace2, comment2)
+	  	//End transaction	
+		println("COMMIT;")		
+	}
+
+	ww.Split::split_sql(){
+		newline(1)
+		var namespace : String
+		var namespaceString : String
+		var talkNamespace : String
+		var link1 : String
+		var link2 : String
+		var comment1 : String
+		var comment2 : String 
+		//The splitted page 
+		var wikiRes : ww.WikiResource = self.arguments.first().wikiResource
+		var splitRes : ww.WikiResource = self.arguments.last().wikiResource
+		var pageTitle : String = wikiRes.title
+		var splitTitle : String = splitRes.title
+				
+		if (wikiRes.oclIsKindOf(ww.Article)){
+		  	namespaceString = "article"
+	  		namespace = "0"
+	  		talkNamespace = "1"
+	  		link1 = "[[" + pageTitle + "]]"
+	  		link2 = "[[" + splitTitle + "]]"
+	  	}else if (wikiRes.oclIsKindOf(ww.Category)){
+	  	  	namespaceString = "category"
+	  	  	namespace = "14"
+	  	  	talkNamespace = "15"
+	  	  	link1 = "[[Category:" + pageTitle + "]]"
+	  	  	link2 = "[[Category:" + splitTitle + "]]"
+	  	}
+	  	println("#Split " + namespaceString + " " + pageTitle + " into " + splitTitle)
+	  	
+	  	comment1 = "Split " + namespaceString.firstToUpper() + " " + link1 + " into " + link2 + " by WikiWhirl"
+	  	comment2 = "Split " + namespaceString.firstToUpper() + " " + link2 + " from " + link1 + " by WikiWhirl"
+	  	
+	  	//Begin transaction
+	  	println("START TRANSACTION;")
+	  	createPage(splitTitle, namespace, comment2)
+	  	//Create a talk page to let users a discussion place about the split operation in both pages
+	  	println("#Create talk for " + namespaceString + " " + pageTitle) 
+	  	createPage(pageTitle, talkNamespace, comment1)
+	  	println("#Create talk for " + namespaceString + " " + splitTitle)
+	  	createPage(splitTitle, talkNamespace, comment2)
+	  	//End transaction	
+		println("COMMIT;")	
+	}
+
+	ww.Merge::merge_sql(){
+		newline(1)
+		var namespace : String
+		var namespaceString : String
+		var talkNamespace : String
+		var link1 : String
+		var link2 : String
+		var link3 : String
+		var redirect : String
+		var comment1 : String
+		var comment2 : String
+		var wikiRes1 : ww.WikiResource = self.arguments.first().wikiResource
+		var wikiRes2 : ww.WikiResource = self.arguments.last().wikiResource
+		var pageTitle1 : String = wikiRes1.title
+		var pageTitle2 : String = wikiRes2.title
+		var mergeTitle : String = pageTitle1 + "_" + pageTitle2
+		var mergeRevisionId : String = "(SELECT rev_id FROM (SELECT * FROM revision) as x where rev_page = @mergeId ORDER BY rev_id DESC LIMIT 1)"
+		var pageRevisionId1 : String = "(SELECT rev_id FROM (SELECT * FROM revision) as x where rev_page = @mergeId ORDER BY rev_id DESC LIMIT 1)"
+		var pageRevisionId2 : String = "(SELECT rev_id FROM (SELECT * FROM revision) as x where rev_page = @mergeId ORDER BY rev_id DESC LIMIT 1)"
+		
+		var pageLen1 : String = "(SELECT page_len FROM page where page_title = '" + pageTitle1 + "' and page_namespace = " + namespace+ ")"
+		var pageLen2 : String = "(SELECT page_len FROM page where page_title = '" + pageTitle2 + "' and page_namespace = " + namespace+ ")"
+		var page1Text : String = "(SELECT old_text from (SELECT * FROM text) as x where old_id = (SELECT rev_text_id FROM revision where rev_page = " +
+									"@pageId1 ORDER BY rev_id DESC LIMIT 1))"
+		var page2Text : String = "(SELECT old_text from (SELECT * FROM text) as x where old_id = (SELECT rev_text_id FROM revision where rev_page = " +
+									"@pageId2 ORDER BY rev_id DESC LIMIT 1))"
+									
+		if (wikiRes1.oclIsKindOf(ww.Article)){
+		  	namespaceString = "article"
+	  		namespace = "0"
+	  		talkNamespace = "1"
+	  		link1 = "[[" + pageTitle1 + "]]"
+	  		link2 = "[[" + pageTitle2 + "]]"
+	  		link3 = "[[" + mergeTitle + "]]"
+	  	}else if (wikiRes1.oclIsKindOf(ww.Category)){
+	  	  	namespaceString = "category"
+	  	  	namespace = "14"
+	  	  	talkNamespace = "15"
+	  	  	link1 = "[[Category:" + pageTitle1 + "]]"
+	  	  	link2 = "[[Category:" + pageTitle2 + "]]"
+	  	  	link3 = "[[Category:" + mergeTitle + "]]"
+	  	}
+	  	println("#Merge " + namespaceString + " " + pageTitle1 + " with " + pageTitle2)
+	  	redirect = "#REDIRECT " + link3
+	  	comment1 = "The content of this page has been merged from " + link1 + " and " + link2 + " by WikiWhirl"
+	  	comment2 = "The content of this page has been merged to " + link3 + " by WikiWhirl"
+	  	
+		//Begin transaction
+	  	println("START TRANSACTION;")
+	  	//Create merged page
+	  	createPage(mergeTitle, namespace, comment1)
+	  	//Set MergeId, merged page
+	  	print("set @mergeId = (SELECT page_id FROM page WHERE page_title='")
+	  	println(mergeTitle + "' and page_namespace=" + namespace + ");")
+	  	//Set PageId, page1
+	  	print("set @pageId1 = (SELECT page_id FROM page WHERE page_title='")
+	  	println(pageTitle1 + "' and page_namespace=" + namespace + ");")
+	  	//Set PageId, page2
+	  	print("set @pageId2 = (SELECT page_id FROM page WHERE page_title='")
+	  	println(pageTitle2 + "' and page_namespace=" + namespace + ");")
+	  	
+	  	//Add content of both pages to the new merged page
+		//Insert into revision, merged page
+		//IMPACT
+		print("INSERT IGNORE into revision (rev_page, rev_text_id, rev_comment, rev_user, rev_user_text, rev_timestamp, rev_minor_edit, ")
+		print("rev_deleted, rev_len, rev_parent_id) VALUES (@mergeId, " + lastTextId + ", '" + comment1 + "', " + userId + ", '" + userName)
+		println("', " + timestamp + ", 0, 0, " + pageLen1 + " + " + pageLen2 + ", " + mergeRevisionId + ");")
+		//Insert into searchindex. Only MyISAM table, target page 
+		//println("INSERT IGNORE into searchindex(si_page, si_title, si_text) VALUES (" + @mergeId + ", '" + mergeTitle + "', CONCAT(page1Text, page2Text )")
+		//Insert into text, target page
+		println("INSERT IGNORE into text (old_text, old_flags) VALUES (CONCAT(' " + comment1.replace("\\[\\[Category", "\\[\\[:Category") + "\\n', " + page1Text + ", '\\n', " + page2Text + ") , 'utf-8');")
+
+	  	//Remove content of both pages and add comment2
+	  	//Insert into revision, page1
+	  	//IMPACT
+		print("INSERT IGNORE into revision (rev_page, rev_text_id, rev_comment, rev_user, rev_user_text, rev_timestamp, rev_minor_edit, ")
+		print("rev_deleted, rev_len, rev_parent_id) VALUES (@pageId1, " + lastTextId + ", '" + comment2 + "', " + userId + ", '" + userName)
+		println("', " + timestamp + ", 0, 0, " + comment2.size() + ", " + pageRevisionId1 + ");")
+		//Insert into searchindex. Only MyISAM table, target page 
+		//println("INSERT IGNORE into searchindex(si_page, si_title, si_text) VALUES (" + @pageId1 + ", '" + pageTitle1 + "', comment2")
+		//Insert into text, page1
+		println("INSERT IGNORE into text (old_text, old_flags) VALUES ('" + redirect + "') , 'utf-8');")
+		
+		//Insert into revision, page2
+		//IMPACT
+		print("INSERT IGNORE into revision (rev_page, rev_text_id, rev_comment, rev_user, rev_user_text, rev_timestamp, rev_minor_edit, ")
+		print("rev_deleted, rev_len, rev_parent_id) VALUES (@pageId2, " + lastTextId + ", '" + comment2 + "', " + userId + ", '" + userName)
+		println("', " + timestamp + ", 0, 0, " + comment2.size() + ", " + pageRevisionId2 + ");")
+		//Insert into searchindex. Only MyISAM table, target page 
+		//println("INSERT IGNORE into searchindex(si_page, si_title, si_text) VALUES (" + @pageId2 + ", '" + pageTitle2 + "', comment2")
+		//Insert into text, page1
+		println("INSERT IGNORE into text (old_text, old_flags) VALUES ('" + redirect + "') , 'utf-8');")
+		
+	  	//Modify all categorylinks to point to the new merged page
+	  	//Insert into categorylinks
+	  	//IMPACT
+	  	print("INSERT into categorylinks (cl_from, cl_to, cl_sortkey, cl_timestamp) SELECT @mergeId, cl_to, " + mergeTitle + ", " + timestamp)
+	  	println(" from categorylinks where cl_from = @pageId1;")
+	  	print("INSERT into categorylinks (cl_from, cl_to, cl_sortkey, cl_timestamp) SELECT @mergeId, cl_to, " + mergeTitle + ", " + timestamp)
+	  	println(" from categorylinks where cl_from = @pageId2;")
+	  	
+	  	//Create a talk page to let users a discussion place about the merge operation in the new page
+	  	println("#Create talk for " + namespaceString + " " + mergeTitle) 
+	  	createPage(mergeTitle, talkNamespace, comment1)
+	  	//End transaction	
+		println("COMMIT;")
+	  
+	}
+	
+	createPage (pageTitle : String, namespace : String, comment : String ){
+		//Patrolled edits are disabled http://en.wikibooks.org/wiki/MediaWiki_Administrator%27s_Handbook/Recent_Changes_Patrol
+	  	//Insert into page
+ 		print("INSERT IGNORE into page (page_namespace, page_title, page_counter, page_is_redirect, page_is_new, page_random,")
+	  	print("page_touched, page_latest, page_len) VALUES (")
+	  	println(namespace + ", '" + pageTitle  + "', 1, 0, 1, " + random  + ", " +  timestamp + ", " + lastRevisionId +", " + comment.size() + ");")
+	  	//Set PageId
+	  	print("set @pageId = (SELECT page_id FROM page WHERE page_title='")
+	  	println(pageTitle + "' and page_namespace=" + namespace + ");")
+	  	//Insert into recentchanges
+	  	print("INSERT IGNORE into recentchanges (rc_timestamp, rc_cur_time, rc_user, rc_user_text, rc_namespace, rc_title, ")
+	  	print("rc_comment, rc_new, rc_cur_id, rc_this_oldid, rc_last_oldid, rc_type, rc_old_len, rc_new_len, rc_deleted) VALUES (")
+		print(timestamp + ", " + timestamp + ", " + userId + ", '" + userName + "', " + namespace)
+		println(", '" + pageTitle + "', '" + comment + "', 1, @pageId, " + lastRevisionId + ", 0, 1, 0, " + comment.size() + ", 0);")
+		//Insert into revision
+		//IMPACT
+		print("INSERT IGNORE into revision (rev_page, rev_text_id, rev_comment, rev_user, rev_user_text, rev_timestamp, rev_minor_edit, ")
+		print("rev_deleted, rev_len, rev_parent_id) VALUES (@pageId, " + lastTextId + ", '" + comment + "', " + userId)
+		println(", '" + userName + "', " + timestamp + ", 0, 0, " + comment.size() + ", 0);")
+		//Insert into searchindex. Only MyISAM table 
+		//println("INSERT IGNORE into searchindex(si_page, si_title, si_text) VALUES (" + @pageId + ", '" + pageTitle + "', '" + comment + "');")
+		//Insert into text
+		println("INSERT IGNORE into text (old_text, old_flags) VALUES ('" + comment + "', 'utf-8');")
+		//Update user
+		println("UPDATE user set user_touched = " + timestamp + " and user_editcount = user_editcount + 1 where user_id = " + userId + ";")
+		//Insert into category
+		if (namespace.equals("14")){
+		  println("INSERT IGNORE into category (cat_title) VALUES ('" + pageTitle + "');")
+		}
+	}
+	
+}

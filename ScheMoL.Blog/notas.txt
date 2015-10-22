@@ -1,0 +1,6 @@
+Para ejecutar el bootstrap, generando el modelo a partir del esquema de BBDD:
+- Botón derecho en build.xml -> Run as -> 2 Ant Build.. -> En la pestaña Targets quitar la selección de execute
+ y ponerla en bootstrap -> OK
+ - En la carpeta bootstrap habrá generado blojsom.ecore
+ 
+ 

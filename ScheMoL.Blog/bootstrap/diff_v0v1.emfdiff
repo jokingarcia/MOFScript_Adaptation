@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="Cp1252"?>
+<diff:ModelInputSnapshot xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:diff="http://www.eclipse.org/emf/compare/diff/1.1" xmlns:match="http://www.eclipse.org/emf/compare/match/1.1" date="2011-11-23T18:02:00.688+0100">
+  <diff left="platform:/resource/ScheMoL.Blog/bootstrap/blojsom_v0.ecore" right="platform:/resource/ScheMoL.Blog/bootstrap/blojsom_v1.ecore">
+    <ownedElements xsi:type="diff:DiffGroup">
+      <subDiffElements xsi:type="diff:DiffGroup">
+        <subDiffElements xsi:type="diff:DiffGroup">
+          <subDiffElements xsi:type="diff:UpdateAttribute">
+            <attribute href="http://www.eclipse.org/emf/2002/Ecore#//ENamedElement/name"/>
+            <leftElement href="platform:/resource/ScheMoL.Blog/bootstrap/blojsom_v0.ecore#//entrymetadata"/>
+            <rightElement href="platform:/resource/ScheMoL.Blog/bootstrap/blojsom_v1.ecore#//postmetadata"/>
+          </subDiffElements>
+          <subDiffElements xsi:type="diff:DiffGroup">
+            <subDiffElements xsi:type="diff:UpdateAttribute">
+              <attribute href="http://www.eclipse.org/emf/2002/Ecore#//ENamedElement/name"/>
+              <leftElement href="platform:/resource/ScheMoL.Blog/bootstrap/blojsom_v0.ecore#//entrymetadata/ref_entrymetadata.entry_id_entry.entry_id"/>
+              <rightElement href="platform:/resource/ScheMoL.Blog/bootstrap/blojsom_v1.ecore#//postmetadata/ref_postmetadata.entry_id_entry.entry_id"/>
+            </subDiffElements>
+            <leftParent href="platform:/resource/ScheMoL.Blog/bootstrap/blojsom_v0.ecore#//entrymetadata/ref_entrymetadata.entry_id_entry.entry_id"/>
+          </subDiffElements>
+          <leftParent href="platform:/resource/ScheMoL.Blog/bootstrap/blojsom_v0.ecore#//entrymetadata"/>
+        </subDiffElements>
+        <subDiffElements xsi:type="diff:DiffGroup">
+          <subDiffElements xsi:type="diff:RemoveModelElement">
+            <rightParent href="platform:/resource/ScheMoL.Blog/bootstrap/blojsom_v1.ecore#//entry"/>
+            <leftElement href="platform:/resource/ScheMoL.Blog/bootstrap/blojsom_v0.ecore#//entry/post_slug"/>
+          </subDiffElements>
+          <leftParent href="platform:/resource/ScheMoL.Blog/bootstrap/blojsom_v0.ecore#//entry"/>
+        </subDiffElements>
+        <subDiffElements xsi:type="diff:DiffGroup">
+          <subDiffElements xsi:type="diff:AddModelElement">
+            <leftParent href="platform:/resource/ScheMoL.Blog/bootstrap/blojsom_v0.ecore#//template"/>
+            <rightElement href="platform:/resource/ScheMoL.Blog/bootstrap/blojsom_v1.ecore#//template/style"/>
+          </subDiffElements>
+          <leftParent href="platform:/resource/ScheMoL.Blog/bootstrap/blojsom_v0.ecore#//template"/>
+        </subDiffElements>
+        <leftParent href="platform:/resource/ScheMoL.Blog/bootstrap/blojsom_v0.ecore#/"/>
+      </subDiffElements>
+    </ownedElements>
+  </diff>
+ 
+</diff:ModelInputSnapshot>

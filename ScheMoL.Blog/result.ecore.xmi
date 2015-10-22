@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:Catalog="http://www.onekin.org/catalog">
+  <Catalog:Catalog version="default">
+    <itsCategories name="/uncategorized/"/>
+    <itsCategories name="/kk/" itsCategories="/0/@itsCategories.1"/>
+  </Catalog:Catalog>
+  <Catalog:Catalog version="catablog">
+    <itsCategories name="/">
+      <itsProducts xsi:type="Catalog:CheapProduct" name="Playstation 3" brand="Dell" family="/Computer Product/Desktop" price="379">
+        <itsAttributes type="Processor:" value="Intel CoreTM 2 Quad-Core Q6600 Processor (2.4GHz, 8MB cache, 1066MHz FSB)"/>
+        <itsAttributes type="Operating_System: " value="Genuine Windows Vista Home Premium"/>
+        <itsAttributes type="Memory: " value="Up to 4GB Dual-Channel DDR2 SDRAM (800MHz)"/>
+        <itsAttributes type="Hard_Drive: " value="500GB"/>
+        <itsAttributes type="Graphics: " value="128MB ATI RadeonTM HD 2400 Pro graphics card"/>
+        <itsAttributes type="Sound: " value="Integrated Sound Blaster AudigyTM ADVANCED HD software"/>
+      </itsProducts>
+    </itsCategories>
+    <itsCategories name="/Computer Product/" itsCategories="/1/@itsCategories.1"/>
+    <itsCategories name="/Computer Product/Desktop/" itsCategories="/1/@itsCategories.2">
+      <itsProducts xsi:type="Catalog:CheapProduct" name="Inspiron530" brand="Dell" family="/Computer Product/Desktop" itsRelatedProducts="/1/@itsCategories.2/@itsProducts.0">
+        <itsAttributes type=" Processor:" value=" Intel CoreTM  2 Quad-Core Q6600 Processor (2.4GHz, 8MB cache, 1066MHz FSB)"/>
+        <itsAttributes type="Operating_System: " value=" Genuine Windows Vista Home Premium"/>
+        <itsAttributes type="Memory: " value=" Up to 4GB Dual-Channel DDR2 SDRAM (800MHz)"/>
+        <itsAttributes type="Hard_Drive: " value=" 500GB"/>
+        <itsAttributes type="Graphics: " value=" 128MB ATI RadeonTM HD 2400 Pro graphics card"/>
+        <itsAttributes type="Sound: " value=" Integrated Sound Blaster AudigyTM  ADVANCED HD software"/>
+        <itsAttributes type="Cost: " value=" 379 "/>
+      </itsProducts>
+      <itsProducts xsi:type="Catalog:CheapProduct" name="StudioHybrid" brand="Dell" family="/Computer Product/Desktop" itsRelatedProducts="/1/@itsCategories.2/@itsProducts.1">
+        <itsAttributes type=" Processor:" value=" Intel Celeron Processor 570 (2.26GHz, 533MHz FSB, 1MB cache)"/>
+        <itsAttributes type="Operating_System: " value=" Genuine Windows Vista Home Premium with Service Pack 1, 32-bit - English"/>
+        <itsAttributes type="Memory: " value=" 1024MB 667MHz Dual Channel DDR2 SDRAM [2x512]"/>
+        <itsAttributes type="Hard_Drive: " value=" 160GB 5400rpm SATA Hard Drive"/>
+        <itsAttributes type="Graphics: " value=" Integrated Intel Graphic Media Accelerator 3100"/>
+        <itsAttributes type="Cost: " value=" 429 "/>
+      </itsProducts>
+      <itsProducts xsi:type="Catalog:CheapProduct" name="Slim" brand="Dell" family="/Computer Product/Desktop" itsRelatedProducts="/1/@itsCategories.2/@itsProducts.2">
+        <itsAttributes type=" Processor:" value=" Intel Core 2 Duo E7400 processor (2.8GHz, 1066MHz, 3MB cache)"/>
+        <itsAttributes type="Operating_System: " value=" Genuine Windows Vista Home Premium SP1 - English"/>
+        <itsAttributes type="Memory: " value=" 2048MB 800MHz Dual Channel DDR2 SDRAM [2x1024]"/>
+        <itsAttributes type="Hard_Drive: " value=" 320GB (7200rpm) SATA Hard Drive"/>
+        <itsAttributes type="Graphics: " value=" Integrated GMA X4500 HD Graphics"/>
+        <itsAttributes type="Cost: " value=" 399 "/>
+      </itsProducts>
+      <itsProducts xsi:type="Catalog:CheapProduct" name="StudioXPSDesktop" brand="Dell" family="/Computer Product/Desktop" itsRelatedProducts="/1/@itsCategories.2/@itsProducts.3">
+        <itsAttributes type=" Processor:" value=" Intel Core i7-920 Processor(8MB L3 Cache, 2.66GHz)"/>
+        <itsAttributes type="Hard_Drive: " value=" 500GB - 7200RPM, SATA 3.0Gb/s, 16MB Cache"/>
+        <itsAttributes type="Graphics: " value=" ATI Radeon HD 3450 256MB"/>
+        <itsAttributes type="Cost: " value=" 799 "/>
+      </itsProducts>
+      <itsProducts xsi:type="Catalog:CheapProduct" name="StudioXPS435" brand="Dell" family="/Computer Product/Desktop" itsRelatedProducts="/1/@itsCategories.2/@itsProducts.4">
+        <itsAttributes type=" Processor:" value=" Intel Core i7-920 processor(8MB L3 Cache, 2.66GHz)"/>
+        <itsAttributes type="Operating_System: " value=" Genuine Windows Vista Home Premium Edition SP1, 64-Bit"/>
+        <itsAttributes type="Memory: " value=" 3GB DDR3 Tri-Channel SDRAM at 1066MHz - 3 DIMMs"/>
+        <itsAttributes type="Hard_Drive: " value=" 500GB 7200 RPM SATA Hard Drive"/>
+        <itsAttributes type="Graphics: " value=" ATI Radeon HD 3650 256MB"/>
+        <itsAttributes type="Sound: " value=" Integrated 7.1 Channel Audio"/>
+      </itsProducts>
+      <itsProducts xsi:type="Catalog:CheapProduct" name="XPSOne" brand="Dell" family="/Computer Product/Desktop" itsRelatedProducts="/1/@itsCategories.2/@itsProducts.5">
+        <itsAttributes type=" Processor:" value=" Intel Core 2 Duo E4500"/>
+        <itsAttributes type="Operating_System: " value=" Genuine Windows Vista Ultimate (PRODUCT) RED"/>
+        <itsAttributes type="Memory: " value=" 2GB Dual Channel DDR2 SDRAM at 667MHz - 2 DIMMs"/>
+        <itsAttributes type="Hard_Drive: " value=" 250GB Serial ATA 3Gb/s Hard Drive (7200RPM) w/DataBurst Cache?"/>
+        <itsAttributes type="Graphics: " value=" Integrated Video"/>
+        <itsAttributes type="Sound: " value=" Integrated Audio - 2.0 Speakers"/>
+        <itsAttributes type="Cost: " value=" 1148 "/>
+      </itsProducts>
+    </itsCategories>
+    <itsCategories name="/Computer Product/Laptop/" itsCategories="/1/@itsCategories.3">
+      <itsProducts xsi:type="Catalog:CheapProduct" name="Mini10" brand="Dell" family="/Computer Product/Desktop" itsRelatedProducts="/1/@itsCategories.3/@itsProducts.0">
+        <itsAttributes type=" Processor:" value=" N-Series Intel Atom Processor N270 (1.60GHz, 533MHz, 512K cache)"/>
+        <itsAttributes type="Operating_System: " value=" Ubuntu 8.04"/>
+        <itsAttributes type="Memory: " value=" 1024MB 533MHz Dual Channel DDR2 SDRAM"/>
+        <itsAttributes type="Hard_Drive: " value=" 8GB Solid State Hard Drive"/>
+        <itsAttributes type="Graphics: " value=" Integrated Intel Graphic Media Accelerator 950"/>
+      </itsProducts>
+      <itsProducts xsi:type="Catalog:CheapProduct" name="XPSM1730" brand="Dell" family="/Computer Product/Desktop" itsRelatedProducts="/1/@itsCategories.3/@itsProducts.1">
+        <itsAttributes type=" Processor:" value=" Intel Core? 2 Duo Processor T8100 (2.10 GHz, 800 MHz FSB, 3 MB L2 cache)"/>
+        <itsAttributes type="Operating_System: " value=" Genuine Windows Vista Home Premium SP1 - English (32 BIT)"/>
+        <itsAttributes type="Memory: " value=" 2048MB 667MHz Dual Channel DDR2 SDRAM [2x1024]"/>
+        <itsAttributes type="Hard_Drive: " value=" 160GB Free Fall Sensor (7200RPM) Hard Drive"/>
+        <itsAttributes type="Graphics: " value=" Video Card Learn More Single 256MB NVIDIA GeForce Go 8700m GT graphics card"/>
+      </itsProducts>
+      <itsProducts xsi:type="Catalog:CheapProduct" name="Studio14z" brand="Dell" family="/Computer Product/Desktop" itsRelatedProducts="/1/@itsCategories.3/@itsProducts.2">
+        <itsAttributes type=" Processor:" value=" Intel Pentium? Dual Core T4200 (2.0GHz/800Mhz FSB/1MB cache)"/>
+        <itsAttributes type="Operating_System: " value=" Genuine Windows Vista Home Premium Edition SP1, 64-Bit)"/>
+        <itsAttributes type="Memory: " value=" 3GB Shared Dual Channel DDR3 at 1066MHz"/>
+        <itsAttributes type="Hard_Drive: " value=" 250GB SATA Hard Drive (5400RPM)"/>
+        <itsAttributes type="Cost: " value=" 649 "/>
+      </itsProducts>
+      <itsProducts xsi:type="Catalog:CheapProduct" name="Inspiron13" brand="Dell" family="/Computer Product/Desktop" itsRelatedProducts="/1/@itsCategories.3/@itsProducts.3">
+        <itsAttributes type=" Processor:" value=" Intel Pentium Dual Core T4200 (2.0GHz/800Mhz FSB/1MB cache)"/>
+        <itsAttributes type="Operating_System: " value=" Genuine Windows Vista Home Basic Edition SP1"/>
+        <itsAttributes type="Memory: " value=" 2GB Shared Dual Channel DDR2 (2 Dimms)"/>
+        <itsAttributes type="Hard_Drive: " value=" 160GB SATA Hard Drive (5400RPM)"/>
+        <itsAttributes type="Graphics: " value=" Intel Graphics Media Accelerator X3100"/>
+        <itsAttributes type="Sound: " value=" Integrated"/>
+        <itsAttributes type="Cost: " value=" 699 "/>
+      </itsProducts>
+      <itsProducts xsi:type="Catalog:CheapProduct" name="StudioXPS13" brand="Dell" family="/Computer Product/Desktop" itsRelatedProducts="/1/@itsCategories.3/@itsProducts.4">
+        <itsAttributes type=" Processor:" value=" Intel Core 2 Duo P7350 (3MB cache/2.0GHz/1066Mhz FSB)"/>
+        <itsAttributes type="Operating_System: " value=" Genuine Windows Vista Home Premium Edition SP1, 64-bit"/>
+        <itsAttributes type="Memory: " value=" 3GB DDR3 SDRAM at 1067MHz (2 Dimms)"/>
+        <itsAttributes type="Hard_Drive: " value=" 250GB 7200 RPM SATA Hard Drive"/>
+        <itsAttributes type="Graphics: " value=" NVIDIA GeForce 9400M G"/>
+        <itsAttributes type="Cost: " value=" 999 "/>
+      </itsProducts>
+      <itsProducts xsi:type="Catalog:CheapProduct" name="XPSM1330" brand="Dell" family="/Computer Product/Desktop" itsRelatedProducts="/1/@itsCategories.3/@itsProducts.5">
+        <itsAttributes type=" Processor:" value=" Intel Core 2 Duo T6400 (2.0GHz/800Mhz FSB/2MB cache)"/>
+        <itsAttributes type="Operating_System: " value=" Genuine Windows Vista Home Premium Edition SP1"/>
+        <itsAttributes type="Memory: " value=" 3GB Shared Dual Channel DDR2 SDRAM at 667MHz"/>
+        <itsAttributes type="Hard_Drive: " value="  320GB SATA Hard Drive (5400RPM)"/>
+        <itsAttributes type="Graphics: " value=" Intel Integrated Graphics Media Accelerator X3100"/>
+        <itsAttributes type="Sound: " value=" High Definition Audio 2.0"/>
+        <itsAttributes type="Cost: " value=" 749 "/>
+      </itsProducts>
+    </itsCategories>
+    <itsCategories name="/Computer Product/Printer/" itsCategories="/1/@itsCategories.4"/>
+    <itsCategories name="/Computer Product/Printer/All-In-One/" itsCategories="/1/@itsCategories.5">
+      <itsProducts xsi:type="Catalog:CheapProduct" name="P703w" brand="Dell" family="/Computer Product/Desktop" itsRelatedProducts="/1/@itsCategories.5/@itsProducts.0">
+        <itsAttributes type=" Base:" value=" Integrated wireless, 3.0&quot; LCD color display, Dedicated 4x6 photo paper tray"/>
+        <itsAttributes type="Connectivity: " value=" Direct Photo Printing via PictBridge connection or USB memory devices, Bluetooth available with adapter purchase, Wi-Fi 802.11 b/g"/>
+        <itsAttributes type="Dimensions (W x D x H) :" value=" 515 mm x 369 mm x 220 mm"/>
+      </itsProducts>
+      <itsProducts xsi:type="Catalog:CheapProduct" name="V305" brand="Dell" family="/Computer Product/Desktop" itsRelatedProducts="/1/@itsCategories.5/@itsProducts.1">
+        <itsAttributes type=" Base:" value=" No Wireless, 2 line OLED display"/>
+        <itsAttributes type="Cost: " value=" 99 "/>
+      </itsProducts>
+      <itsProducts xsi:type="Catalog:CheapProduct" name="V305w" brand="Dell" family="/Computer Product/Desktop">
+        <itsAttributes type=" Base:" value=" Wireless function anywhere within wireless network range, 2 line OLED display"/>
+        <itsAttributes type="Dimensions (W x D x H) :" value=" 450 mm x 312 mm x 176.5 mm"/>
+      </itsProducts>
+      <itsProducts xsi:type="Catalog:CheapProduct" name="V505" brand="Dell" family="/Computer Product/Desktop">
+        <itsAttributes type=" Base:" value=" (PRODUCT) RED Signature Product ? $5 from this sale goes to the Global Fund to help fight AIDS in Africa, No Wireless, 2 line OLED display, 25 page automatic document feeder for multi-page scanning, faxing and copying, Double-sided printing"/>
+        <itsAttributes type="Cost: " value=" 129 "/>
+      </itsProducts>
+      <itsProducts xsi:type="Catalog:CheapProduct" name="P505w" brand="Dell" family="/Computer Product/Desktop">
+        <itsAttributes type=" Base:" value=" (PRODUCT) RED Signature Product ? $5 from this sale goes to the Global Fund to help fight AIDS in Africa, No Wireless, 2 line OLED display, 25 page automatic document feeder for multi-page scanning, faxing and copying, Double-sided printing, Wireless function anywhere within wireless network range"/>
+        <itsAttributes type="Connectivity: " value=" Direct Photo Printing via PictBridge connection or USB memory devices, Wi-Fi 802.11 b/g"/>
+        <itsAttributes type="Dimensions (W x D x H) :" value=" 432mm x 312mm x 174mm"/>
+        <itsAttributes type="Cost: " value=" 169 "/>
+      </itsProducts>
+      <itsProducts xsi:type="Catalog:CheapProduct" name="968" brand="Dell" family="/Computer Product/Desktop">
+        <itsAttributes type=" Base:" value=" No Wireless, 2.4&quot; LCD Color display, 50 page automatic document feeder for multi-page scanning, faxing and copying, Double-sided printing, Additional Paper input drawer"/>
+        <itsAttributes type="Function:" value=" Print/Copy/Scan"/>
+        <itsAttributes type="Connectivity:" value="  Direct Photo Printing via PictBridge connection or USB memory devices"/>
+        <itsAttributes type="Dimensions (W x D x H) :" value=" 458mm X 384mm X 270mm"/>
+        <itsAttributes type="Cost: " value=" 179 "/>
+      </itsProducts>
+    </itsCategories>
+    <itsCategories name="/Computer Product/Printer/Laser/" itsCategories="/1/@itsCategories.6">
+      <itsProducts xsi:type="Catalog:CheapProduct" name="1230c" brand="Dell" family="/Computer Product/Desktop">
+        <itsAttributes type=" Speed:" value=" Up to 17 ppm mono and up to 4 ppm color"/>
+        <itsAttributes type="Resolution:" value=" 2400 x 600 dpi"/>
+        <itsAttributes type="Duty Cicle: " value="20K images/month duty cycle (max)"/>
+        <itsAttributes type="Ports: " value=" USB2.0 (Cable not included) High speed supported (Type-B connector)"/>
+        <itsAttributes type="Dimensions (W x D x H) :" value=" 15.3&quot; x 12.3&quot; x 9.6&quot;"/>
+        <itsAttributes type="Cost: " value=" 199 "/>
+      </itsProducts>
+      <itsProducts xsi:type="Catalog:CheapProduct" name="1320c" brand="Dell" family="/Computer Product/Desktop">
+        <itsAttributes type=" Speed:" value=" Prints up to 16 ppm in Black and White and 12 ppm in Color"/>
+        <itsAttributes type="Duty Cicle: " value="35k pages/month duty cycle (max)"/>
+        <itsAttributes type="Ports: " value=" USB 2.0 (Cable not included), 10/100BaseT Ethernet with 1320 Network Adapter"/>
+        <itsAttributes type="Dimensions (W x D x H) :" value=" 15.6&quot; x 16.6&quot; x 14.8&quot;"/>
+        <itsAttributes type="Cost: " value=" 249 "/>
+      </itsProducts>
+      <itsProducts xsi:type="Catalog:CheapProduct" name="2130cn" brand="Dell" family="/Computer Product/Desktop">
+        <itsAttributes type=" Speed:" value=" Up to 20 ppm black and white and up to 16 ppm color"/>
+        <itsAttributes type="Resolution:" value=" 600 x 600 dpi, 2400 Image Quality"/>
+        <itsAttributes type="Dimensions (W x D x H) :" value=" 15.7&quot; x 16&quot; x 16.3&quot;"/>
+        <itsAttributes type="Cost: " value=" 269 "/>
+      </itsProducts>
+      <itsProducts xsi:type="Catalog:CheapProduct" name="2135cn" brand="Dell" family="/Computer Product/Desktop">
+        <itsAttributes type=" Speed:" value=" Up to 16 ppm mono and up to 12 ppm color"/>
+        <itsAttributes type="Resolution:" value=" 600 X 600 dots per inch (dpi), 2400 Image Quality"/>
+        <itsAttributes type="Duty Cicle: " value="40K pages/month duty cycle (max)"/>
+        <itsAttributes type="Ports: " value=" 10/100BaseT Ethernet, USB 2.0 High speed supported (Type-B connector)"/>
+        <itsAttributes type="Dimensions (W x D x H) :" value=" 17.2&quot; x 19.5&quot; x 22.8&quot;"/>
+        <itsAttributes type="Cost: " value=" 549 "/>
+      </itsProducts>
+      <itsProducts xsi:type="Catalog:CheapProduct" name="3115cn" brand="Dell" family="/Computer Product/Desktop">
+        <itsAttributes type=" Speed:" value=" Prints up to 31 ppm in Black and White and 17 ppm in Color "/>
+        <itsAttributes type="Resolution:" value=" 600 x 600 dpi, 2400 Image Quality "/>
+        <itsAttributes type="Duty Cicle: " value="60K pages/month duty cycle (max)"/>
+        <itsAttributes type="Ports: " value=" 10/100BaseT Ethernet, IEEE 1284 Parallel Port, USB 2.0 High speed supported (Type-B connector)"/>
+        <itsAttributes type="Dimensions (W x D x H) :" value=" 18.1&quot; x 22.4&quot; x 28.7&quot;"/>
+        <itsAttributes type="Cost: " value=" 539 "/>
+      </itsProducts>
+    </itsCategories>
+  </Catalog:Catalog>
+</xmi:XMI>

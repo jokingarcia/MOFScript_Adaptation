@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="WikiWhirl"
+    nsURI="www.onekin.org/wikiwhirl" nsPrefix="WikiWhirl">
+  <eClassifiers xsi:type="ecore:EClass" name="WW_Process">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="wiki" lowerBound="1" eType="#//Wiki"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ww_Operations" upperBound="-1"
+        eType="#//WW_Operation" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="WW_Operation" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="arguments" upperBound="-1"
+        eType="#//Argument" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="number" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Wiki">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="wikiResources" upperBound="-1"
+        eType="#//WikiResource"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="title" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        defaultValueLiteral=""/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Page" abstract="true" eSuperTypes="#//WikiResource">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sections" upperBound="-1"
+        eType="#//Section" containment="true" eOpposite="#//Section/itsPage"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Operation" abstract="true"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Category" eSuperTypes="#//Page">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="parentCategories" upperBound="-1"
+        eType="#//Category" eOpposite="#//Category/childrenCategories"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="childrenCategories" lowerBound="1"
+        upperBound="-1" eType="#//Category" eOpposite="#//Category/parentCategories"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="articles" upperBound="-1"
+        eType="#//Article" eOpposite="#//Article/categories"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Article" eSuperTypes="#//Page">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="categories" upperBound="-1"
+        eType="#//Category" eOpposite="#//Category/articles"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Section" eSuperTypes="#//WikiResource">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="content" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="level" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="itsPage" lowerBound="1"
+        eType="#//Page" eOpposite="#//Page/sections"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="WikiResource" abstract="true">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="title" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="URL" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Argument" abstract="true"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ReferenceArg" eSuperTypes="#//Argument">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="wikiResource" eType="#//WikiResource"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ResourceArg" eSuperTypes="#//Argument">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="wikiResource" eType="#//WikiResource"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Uncategorize" eSuperTypes="#//WW_Operation"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Categorize" eSuperTypes="#//WW_Operation"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Create" eSuperTypes="#//WW_Operation"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Drop" eSuperTypes="#//WW_Operation"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Rename" eSuperTypes="#//WW_Operation"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Split" eSuperTypes="#//WW_Operation"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Move" eSuperTypes="#//WW_Operation"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Merge" eSuperTypes="#//WW_Operation"/>
+</ecore:EPackage>

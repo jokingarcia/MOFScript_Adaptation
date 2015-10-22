@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="ScheMoLExecution" default="execute">
+
+	<!-- Concrete Syntax path -->
+    <property name="csPath" value="./src/catalog.db2m"/>
+	<!-- Abstract Syntax path -->
+    <property name="asPath" value="./model/schemol.ecore"/>
+	<!-- G2M transformation path -->
+    <property name="g2mPath" value="./syntax/extractAS.g2m"/>
+	<!-- Target Metamodel path -->
+    <property name="targetMetamodel" value="./metamodels/Catalog.ecore"/>
+	<!-- Target Metamodel package -->
+    <property name="targetMetamodelPackage" value="Catalog"/>
+	<!-- Database type -->
+    <property name="dbType" value="MYSQL"/>
+	<!-- Database host -->
+    <property name="dbHost" value="localhost"/>
+	<!-- Database name -->
+    <property name="dbName" value="blojsom"/>
+	<!-- Database user -->
+    <property name="dbUser" value="root"/>
+    <!-- Database user password -->
+    <property name="dbPassword" value="badminto"/>
+    <!-- Result path -->
+    <property name="resultPath" value="./result.ecore.xmi"/>
+	
+    <path id="path.taskdef">
+    	<pathelement location="./lib/antlr-2.7.7.jar"/>
+    	<pathelement location="./lib/antlr-3.0.1.jar"/>
+    	<pathelement location="./lib/antlr-runtime-3.0.1.jar"/>
+    	<pathelement location="./lib/antlr3-antTask.jar"/>
+    	<pathelement location="./lib/stringtemplate-3.1b1.jar"/>
+    	<pathelement location="./lib/org.eclipse.emf.common_2.3.0.v200706262000.jar"/>
+        <pathelement location="./lib/org.eclipse.emf.ecore.xmi_2.3.0.v200706262000.jar"/>
+    	<pathelement location="./lib/org.eclipse.emf.ecore_2.3.0.v200706262000.jar"/>
+     	<pathelement location="./lib/gts.modernization.grammar2Model.antTasks.jar"/>
+     	<pathelement location="./lib/gts.modernization.grammar2Model.jar"/>
+     	<pathelement location="./lib/org.eclipse.gmt.modisco.OLD.jar"/>
+     	<pathelement location="./lib/mysql-connector-java-5.1.8-bin.jar"/>
+     	<pathelement location="./libAnt/schemol.jar"/>
+    	<pathelement location="./lib/de.tudarmstadt.ukp.wikipedia.api-0.7.2.jar"/>
+		<pathelement location="./lib/commons-logging-1.1.1.jar"/>
+   	</path>
+	
+	<target name="execute">
+		<taskdef name="ScheMoLInterpreter" classname="schemol.util.ScheMoLAntTask" classpathref="path.taskdef"/>
+		<ScheMoLInterpreter 
+			csPath="${csPath}" 
+			asPath="${asPath}" 
+			g2mPath="${g2mPath}"
+			metamodelPath="${targetMetamodel}" 
+			metamodelPrefix="${targetMetamodelPackage}"
+			dbType="${dbType}"
+			host="${dbHost}"
+			database="${dbName}"
+			user="${dbUser}"
+			password="${dbPassword}"
+			resultPath="${resultPath}"
+		/>
+	</target>	
+	 <target name="bootstrap">
+	                <taskdef name="ScheMoLBootstrap" classname="schemol.util.ScheMoLBootstrapTask" classpathref="path.taskdef"/>
+	                <ScheMoLBootstrap 
+	                    dbType="${dbType}"
+	                    host="${dbHost}"
+	                    database="${dbName}"
+	                    user="${dbUser}"
+	                    password="${dbPassword}"
+	                />
+	            </target>
+</project>

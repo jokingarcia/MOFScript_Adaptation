@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ASCII"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:blojsom="http:///onekin.schemol.blojsom.ecore">
+  <blojsom:blog id="1" blog_id="default"/>
+  <blojsom:template template_value="atom.vm, application/atom+xml;charset=UTF-8" ref_template.blog_id_blog.id="/0" blog_id="1" template_id="57" template_flavor="atom"/>
+  <blojsom:template template_value="org/blojsom/plugin/admin/templates/admin.vm, text/html;charset=UTF-8" ref_template.blog_id_blog.id="/0" blog_id="1" template_id="58" template_flavor="admin"/>
+  <blojsom:template template_value="rss.vm, text/xml;charset=UTF-8" ref_template.blog_id_blog.id="/0" blog_id="1" template_id="59" template_flavor="rss"/>
+  <blojsom:template template_value="rsd.vm, application/rsd+xml;charset=UTF-8" ref_template.blog_id_blog.id="/0" blog_id="1" template_id="60" template_flavor="rsd"/>
+  <blojsom:template template_value="rdf.vm, text/xml;charset=UTF-8" ref_template.blog_id_blog.id="/0" blog_id="1" template_id="61" template_flavor="rdf"/>
+  <blojsom:template template_value="asual.vm, text/html;charset=UTF-8" ref_template.blog_id_blog.id="/0" blog_id="1" template_id="62" template_flavor="html"/>
+  <blojsom:template template_value="rss2.vm, text/xml;charset=UTF-8" ref_template.blog_id_blog.id="/0" blog_id="1" template_id="63" template_flavor="rss2"/>
+  <blojsom:category description="Uncategorized" name="/uncategorized/" blog_id="1" category_id="1" ref_category.blog_id_blog.id="/0"/>
+  <blojsom:entry ref_entry.blog_category_id_category.category_id="/0" allow_trackbacks="1" status="published" allow_comments="1" modified_date="2009-06-27T20:29:34.000+0200" allow_pingbacks="1" blog_category_id="1" ref_entry.blog_id_blog.id="/8" entry_id="1" author="default" title="Froga" description="Hau frogatxo bat da" blog_id="1" entry_date="2009-06-27T20:29:34.000+0200"/>
+  <blojsom:postmetadata entry_metadata_id="1" entry_id="1" metadata_key="technorati-tags" ref_postmetadata.entry_id_entry.entry_id="/9" metadata_value=""/>
+  <blojsom:postmetadata entry_metadata_id="2" entry_id="1" metadata_key="send-pingbacks" ref_postmetadata.entry_id_entry.entry_id="/9" metadata_value="true"/>
+  <blojsom:postmetadata entry_metadata_id="3" entry_id="1" metadata_key="language" ref_postmetadata.entry_id_entry.entry_id="/9" metadata_value="es"/>
+  <blojsom:properties property_id="1" property_value="http://localhost:8080/blojsom/blog/default" property_name="blog-url" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="2" property_value="http://localhost:8080/blojsom/blog/default" property_name="blog-admin-url" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="3" property_value="http://localhost:8080/blojsom" property_name="blog-base-url" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="4" property_value="http://localhost:8080/blojsom" property_name="blog-base-admin-url" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="5" property_value="en" property_name="blog-language" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="6" property_value="NAME YOUR BLOG" property_name="blog-name" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="7" property_value="DESCRIBE YOUR BLOG" property_name="blog-description" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="8" property_value="15" property_name="blog-entries-display" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="9" property_value="Default Owner" property_name="blog-owner" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="10" property_value="default_owner@email.com" property_name="blog-owner-email" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="11" property_value="true" property_name="blog-comments-enabled" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="12" property_value="true" property_name="blog-trackbacks-enabled" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="13" property_value="true" property_name="blog-email-enabled" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="14" property_value="html" property_name="blog-default-flavor" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="15" property_value="true" property_name="plugin-comment-autoformat" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="16" property_value="true" property_name="linear-navigation-enabled" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="17" property_value="true" property_name="comment-moderation-enabled" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="18" property_value="true" property_name="trackback-moderation-enabled" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="19" property_value="true" property_name="pingback-moderation-enabled" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="20" property_value="http://rpc.pingomatic.com" property_name="blog-ping-urls" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="21" property_value="image/jpeg, image/gif, image/png, img" property_name="blojsom-extension-metaweblog-accepted-types" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="22" property_value="true" property_name="xmlrpc-enabled" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:properties property_id="23" property_value="true" property_name="blog-pingbacks-enabled" ref_properties.blog_id_blog.id="/0" blog_id="1"/>
+  <blojsom:dbuser user_login="default" blog_id="1" user_name-user_email="Default User" user_password="default" user_status="" user_registered="2009-06-27T19:34:39.000+0200" user_id="1" ref_dbuser.blog_id_blog.id="/0"/>
+  <blojsom:plugin plugin_flavor="default" plugin_id="25" blog_id="1" plugin_value="conditional-get, meta, nofollow, rss-enclosure" ref_plugin.blog_id_blog.id="/0"/>
+  <blojsom:plugin plugin_flavor="admin" plugin_id="26" blog_id="1" plugin_value="admin" ref_plugin.blog_id_blog.id="/0"/>
+  <blojsom:plugin plugin_flavor="html" plugin_id="27" blog_id="1" plugin_value="meta, tag-cloud, date-format, referer-log, calendar-gui, calendar-filter, comment, trackback, simple-search, emoticons, macro-expansion, days-since-posted, word-count, simple-obfuscation, nofollow, rss-enclosure, technorati-tags" ref_plugin.blog_id_blog.id="/0"/>
+  <blojsom:dbusermetadata metadata_key="all_permissions_permission" metadata_value="true" ref_dbusermetadata.user_id_dbuser.user_id="/36" user_id="1" user_metadata_id="1"/>
+</xmi:XMI>

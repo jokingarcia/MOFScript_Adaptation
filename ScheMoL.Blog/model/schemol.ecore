@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="schemol"
+    nsURI="http://www.modelum.es/schemol" nsPrefix="schemol">
+  <eSubpackages name="core" nsURI="http://www.modelum.es/schemol/core" nsPrefix="core">
+    <eClassifiers xsi:type="ecore:EClass" name="Definition">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="rules" upperBound="-1"
+          eType="#//core/Rule" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="preambleParts" upperBound="-1"
+          eType="#//core/Preamble" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Rule" abstract="true">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="from" eType="#//core/FromPart"
+          containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="to" eType="#//core/ToPart"
+          containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="filter" eType="#//core/FilterPart"
+          containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="mappings" upperBound="-1"
+          eType="#//core/Statement" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="NormalRule" eSuperTypes="#//core/Rule"/>
+    <eClassifiers xsi:type="ecore:EClass" name="TopRule" eSuperTypes="#//core/Rule"/>
+    <eClassifiers xsi:type="ecore:EClass" name="FromPart">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="fromElement" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="ToPart">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="toElement" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="FilterPart">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="expression" eType="#//expression/Expression"
+          containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Statement" abstract="true"/>
+    <eClassifiers xsi:type="ecore:EClass" name="Binding" eSuperTypes="#//core/Statement">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="leftOperand" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="rightOperand" eType="#//expression/Expression"
+          containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="If" eSuperTypes="#//core/Statement">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="exp" eType="#//expression/Expression"
+          containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="ifmap" upperBound="-1"
+          eType="#//core/Statement" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="elsemap" upperBound="-1"
+          eType="#//core/Statement" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Preamble" abstract="true"/>
+    <eClassifiers xsi:type="ecore:EClass" name="Constraint" eSuperTypes="#//core/Preamble">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="table" lowerBound="1"
+          eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="primaryKeys" upperBound="-1"
+          eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="foreignKeys" upperBound="-1"
+          eType="#//core/Key" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="View" eSuperTypes="#//core/Preamble">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1"
+          eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="columns" lowerBound="1"
+          upperBound="-1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="select" lowerBound="1"
+          eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Key">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="fromTable" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="fromColumn" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="toTable" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="toColumn" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eClassifiers>
+  </eSubpackages>
+  <eSubpackages name="query" nsURI="http://www.modelum.es/schemol/query" nsPrefix="query">
+    <eClassifiers xsi:type="ecore:EClass" name="QueryBase" eSuperTypes="#//expression/Expression">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="baseName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="queryPart" eType="#//query/QueryPart"
+          containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="QueryPart">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//query/QueryType"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="filter" eType="#//expression/FilterExpression"
+          containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="groupBy" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="params" upperBound="-1"
+          eType="#//query/QueryParameter" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="nextQuery" eType="#//query/QueryPart"
+          containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EEnum" name="QueryType">
+      <eLiterals name="TABLE" literal="TABLE"/>
+      <eLiterals name="COLUMN" value="1" literal="COLUMN"/>
+      <eLiterals name="HTML" value="2" literal="HTML"/>
+      <eLiterals name="OPERATION" value="3"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="QueryParameter">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="expression" eType="#//expression/Expression"
+          containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="QueryFilter" eSuperTypes="#//expression/FilterExpression">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="column" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="expression" eType="#//expression/Expression"
+          containment="true"/>
+    </eClassifiers>
+  </eSubpackages>
+  <eSubpackages name="expression" nsURI="http://www.modelum.es/schemol/expression"
+      nsPrefix="expression">
+    <eClassifiers xsi:type="ecore:EClass" name="Expression"/>
+    <eClassifiers xsi:type="ecore:EClass" name="ArithmeticExpression" eSuperTypes="#//expression/Expression">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="leftOperand" eType="#//expression/Expression"
+          containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//expression/ArithmeticExpressionType"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="rightOperand" eType="#//expression/Expression"
+          containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EEnum" name="ArithmeticExpressionType">
+      <eLiterals name="ADD" literal="ADD"/>
+      <eLiterals name="MINUS" value="1" literal="MINUS"/>
+      <eLiterals name="DIVIDE" value="2" literal="DIVIDE"/>
+      <eLiterals name="MULT" value="3" literal="MULT"/>
+      <eLiterals name="LENGTH" value="4"/>
+      <eLiterals name="COUNT" value="5"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="BooleanExpression" eSuperTypes="#//expression/Expression">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="leftOperand" eType="#//expression/Expression"
+          containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//expression/BooleanExpressionType"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="rightOperand" eType="#//expression/Expression"
+          containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EEnum" name="BooleanExpressionType">
+      <eLiterals name="AND" value="4" literal="AND"/>
+      <eLiterals name="OR" value="5" literal="OR"/>
+      <eLiterals name="GREATER" value="6" literal="GREATER"/>
+      <eLiterals name="GREATEREQ" value="7" literal="GREATEREQ"/>
+      <eLiterals name="LESS" value="8" literal="LESS"/>
+      <eLiterals name="LESSEQ" value="9" literal="LESSEQ"/>
+      <eLiterals name="EQUALS" value="10"/>
+      <eLiterals name="STARTSWITH" value="11"/>
+      <eLiterals name="ENDSWITH" value="12"/>
+      <eLiterals name="DISTINCT" value="13"/>
+      <eLiterals name="INMEDIATE" value="14"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="FilterExpression" eSuperTypes="#//expression/Expression">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="leftOperand" eType="#//expression/Expression"
+          containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//expression/BooleanExpressionType"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="rightOperand" eType="#//expression/Expression"
+          containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="StringExpression" eSuperTypes="#//expression/Expression">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="leftOperand" eType="#//expression/Expression"
+          containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//expression/StringExpressionType"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="rightOperand" eType="#//expression/Expression"
+          containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EEnum" name="StringExpressionType">
+      <eLiterals name="CONCAT"/>
+      <eLiterals name="TRIM" value="1"/>
+      <eLiterals name="TOUPPERCASE" value="2"/>
+      <eLiterals name="TOLOWERCASE" value="3"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="StringElement" eSuperTypes="#//expression/ValuedElement"/>
+    <eClassifiers xsi:type="ecore:EClass" name="IntElement" eSuperTypes="#//expression/ValuedElement"/>
+    <eClassifiers xsi:type="ecore:EClass" name="BoolElement" eSuperTypes="#//expression/BooleanExpression">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="ValuedElement" eSuperTypes="#//expression/Expression">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eClassifiers>
+  </eSubpackages>
+</ecore:EPackage>
