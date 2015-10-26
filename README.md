@@ -7,3 +7,8 @@ Forward Engineering advocates for code to be generated dynamically through model
 To this end, the transformation process is split in two parts: the stable part is coded as a MOFScript transformation whereas the unstable side is isolated through an adapter that is implicitly called by
 the transformation at generation time. In this way, platform upgrades impact the adapter but leave the transformation untouched. The work focuses on DB schema evolution, and takes MediaWiki as a vivid case
 study. A first case study results in the upfront cost of using the adapter paying off after three releases MediaWiki upgrades.
+
+Screencasts of the tool:
+* Transformation adaptation ([https://www.youtube.com/watch?v=oTYKflg3wLk])
+* Batch execution ([https://www.youtube.com/watch?v=P2UXoE_Awlw])
+* MOFScript adaptation ([https://www.youtube.com/watch?v=kII18jnY__k])
